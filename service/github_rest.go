@@ -27,7 +27,6 @@ type queryParameter struct {
 // /users/{username}/packages
 func GetUserPackages(configuration *config.Config) (*[]github_model.UserPackage, error) {
 	url := concatUrl(gitHubUserUrl, configuration.User, "packages")
-	log.Println(url)
 	response, err := get(url, configuration, []queryParameter{{name: "package_type", value: configuration.PackageType}})
 
 	if err != nil {
