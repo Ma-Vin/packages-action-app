@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/ma-vin/packages-action/config"
@@ -22,10 +23,12 @@ type queryParameter struct {
 	value string
 }
 
-// calls GitHub rest api to get all packages of a certain type and user
+// calls GitHub rest api to get all packages of a certain type and user.
+// /users/{username}/packages
 func GetUserPackages(configuration *config.Config) (*[]github_model.UserPackage, error) {
-
-	response, err := get(gitHubUserUrl+"/"+configuration.User+"/packages", configuration, []queryParameter{{name: "package_type", value: configuration.PackageType}})
+	url := concatUrl(gitHubUserUrl, configuration.User, "packages")
+	log.Println(url)
+	response, err := get(url, configuration, []queryParameter{{name: "package_type", value: configuration.PackageType}})
 
 	if err != nil {
 		return nil, err
@@ -36,8 +39,23 @@ func GetUserPackages(configuration *config.Config) (*[]github_model.UserPackage,
 	return &packages, mapJsonResponse(response, &packages)
 }
 
+// calls GitHub rest api to get a package of a certain type and user.
+// users/{username}/packages/{package_type}/{package_name}
+func GetUserPackage(packageName string, configuration *config.Config) (*github_model.UserPackage, error) {
+	url := concatUrl(gitHubUserUrl, configuration.User, "packages", configuration.PackageType, packageName)
+	response, err := get(url, configuration, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var userPackage github_model.UserPackage
+
+	return &userPackage, mapJsonResponse(response, &userPackage)
+}
+
 // calls GitHub rest api to get all packages of a certain type and user.
-// The result ist printed to log
+// The result is printed to log
 func GetAndPrintUserPackages(configuration *config.Config) (*[]github_model.UserPackage, error) {
 
 	packages, err := GetUserPackages(configuration)
@@ -52,6 +70,21 @@ func GetAndPrintUserPackages(configuration *config.Config) (*[]github_model.User
 	}
 
 	return packages, nil
+}
+
+// calls GitHub rest api to get a package of a certain type and user.
+// The result is printed to log
+func GetAndPrintUserPackage(packageName string, configuration *config.Config) (*github_model.UserPackage, error) {
+
+	userPackage, err := GetUserPackage(packageName, configuration)
+
+	if err != nil {
+		return userPackage, err
+	}
+
+	log.Println(userPackage.Name, userPackage.Id)
+
+	return userPackage, nil
 }
 
 // maps the the json body of a response to a given target object
@@ -93,4 +126,15 @@ func get(url string, configuration *config.Config, parameters []queryParameter) 
 	req.URL.RawQuery = q.Encode()
 
 	return c.Do(req)
+}
+
+func concatUrl(urlParts ...string) string {
+	var sb strings.Builder
+	for i, urlPart := range urlParts {
+		sb.WriteString(urlPart)
+		if i+1 < len(urlParts) && !strings.HasSuffix(urlPart, "/") {
+			sb.WriteString("/")
+		}
+	}
+	return sb.String()
 }
