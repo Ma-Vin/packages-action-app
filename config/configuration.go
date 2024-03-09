@@ -75,7 +75,7 @@ func mapToPackageType(toMap string) PackageType {
 }
 
 // maps a given to package type to a readable string
-func mapFromPackageType(toMap PackageType) string {
+func MapFromPackageType(toMap PackageType) string {
 	switch toMap {
 	case MAVEN:
 		return "maven"
@@ -96,7 +96,7 @@ func printConfig(config *Config) {
 	fmt.Println("Read configuration", config.Organization)
 	fmt.Println("  Organization:    ", config.Organization)
 	fmt.Println("  User:            ", config.User)
-	fmt.Println("  PackageType:     ", mapFromPackageType(config.PackageType))
+	fmt.Println("  PackageType:     ", MapFromPackageType(config.PackageType))
 	fmt.Println("  PackageName:     ", config.PackageName)
 	fmt.Println("  DeleteSnapshots: ", config.DeleteSnapshots)
 	if config.GithubToken != "" {
