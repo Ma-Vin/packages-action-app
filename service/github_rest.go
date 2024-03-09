@@ -2,6 +2,7 @@ package service
 
 import (
 	"encoding/json"
+	"fmt"
 	"io"
 	"log"
 	"net/http"
@@ -29,23 +30,10 @@ func GetUserPackages(configuration *config.Config) (*[]github_model.UserPackage,
 	if err != nil {
 		return nil, err
 	}
-	if response.StatusCode >= 400 {
-		log.Println("An error status code occured: ", response.StatusCode)
-	}
-
-	responseData, err := io.ReadAll(response.Body)
-	if err != nil {
-		return nil, err
-	}
 
 	var packages []github_model.UserPackage
 
-	err = json.Unmarshal(responseData, &packages)
-	if err != nil {
-		return nil, err
-	}
-
-	return &packages, nil
+	return &packages, mapJsonResponse(response, &packages)
 }
 
 // calls GitHub rest api to get all packages of a certain type and user.
@@ -64,6 +52,25 @@ func GetAndPrintUserPackages(configuration *config.Config) (*[]github_model.User
 	}
 
 	return packages, nil
+}
+
+// maps the the json body of a response to a given target object
+func mapJsonResponse(response *http.Response, target any) error {
+	if response.StatusCode >= 400 {
+		return fmt.Errorf("an error status code occured: %d", response.StatusCode)
+	}
+
+	responseData, err := io.ReadAll(response.Body)
+	if err != nil {
+		return err
+	}
+
+	err = json.Unmarshal(responseData, target)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Executes a get rest call
