@@ -1,23 +1,20 @@
 package main
 
 import (
-	"fmt"
-	"os"
+	"log"
 
 	"github.com/ma-vin/packages-action/config"
 )
 
 // Main funtion to execute the actions process
 func main() {
-	fmt.Println("Start packages action")
+	log.Println("Start packages action")
 
 	var loadedConfig = config.ReadConfiguration()
 
 	if loadedConfig == nil {
-		fmt.Println("Packages action failed")
-		os.Exit(1)
-		return
+		log.Fatalln("Packages action failed")
 	}
 
-	fmt.Println("Packages action done")
+	log.Println("Packages action done")
 }

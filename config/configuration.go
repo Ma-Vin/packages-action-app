@@ -1,7 +1,7 @@
 package config
 
 import (
-	"fmt"
+	"log"
 	"os"
 	"strings"
 )
@@ -55,7 +55,7 @@ func ReadConfiguration() *Config {
 	if isValid(&config) {
 		return &config
 	}
-	fmt.Println("Invalid configuration!")
+	log.Println("Invalid configuration!")
 	return nil
 }
 
@@ -93,15 +93,15 @@ func isValid(config *Config) bool {
 
 // prints a given configuration to the standard output
 func printConfig(config *Config) {
-	fmt.Println("Read configuration", config.Organization)
-	fmt.Println("  Organization:    ", config.Organization)
-	fmt.Println("  User:            ", config.User)
-	fmt.Println("  PackageType:     ", MapFromPackageType(config.PackageType))
-	fmt.Println("  PackageName:     ", config.PackageName)
-	fmt.Println("  DeleteSnapshots: ", config.DeleteSnapshots)
+	log.Println("Read configuration", config.Organization)
+	log.Println("  Organization:    ", config.Organization)
+	log.Println("  User:            ", config.User)
+	log.Println("  PackageType:     ", MapFromPackageType(config.PackageType))
+	log.Println("  PackageName:     ", config.PackageName)
+	log.Println("  DeleteSnapshots: ", config.DeleteSnapshots)
 	if config.GithubToken != "" {
-		fmt.Println("  GithubToken:      ***")
+		log.Println("  GithubToken:      ***")
 	} else {
-		fmt.Println("  GithubToken:")
+		log.Println("  GithubToken:")
 	}
 }
