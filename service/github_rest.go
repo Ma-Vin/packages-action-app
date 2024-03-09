@@ -33,9 +33,9 @@ func GetUserPackages(configuration *config.Config) (*[]github_model.UserPackage,
 		return nil, err
 	}
 
-	var packages []github_model.UserPackage
+	var userPackages []github_model.UserPackage
 
-	return &packages, mapJsonResponse(response, &packages)
+	return &userPackages, mapJsonResponse(response, &userPackages)
 }
 
 // calls GitHub rest api to get a package of a certain type and user.
@@ -57,18 +57,18 @@ func GetUserPackage(packageName string, configuration *config.Config) (*github_m
 // The result is printed to log
 func GetAndPrintUserPackages(configuration *config.Config) (*[]github_model.UserPackage, error) {
 
-	packages, err := GetUserPackages(configuration)
+	userPackages, err := GetUserPackages(configuration)
 
 	if err != nil {
-		return packages, err
+		return userPackages, err
 	}
 
-	log.Println("Number of packages:", len(*packages))
-	for i, p := range *packages {
+	log.Println("Number of packages:", len(*userPackages))
+	for i, p := range *userPackages {
 		log.Println(i+1, p.Name, p.Id)
 	}
 
-	return packages, nil
+	return userPackages, nil
 }
 
 // calls GitHub rest api to get a package of a certain type and user.
