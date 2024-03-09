@@ -22,52 +22,57 @@ type queryParameter struct {
 }
 
 // calls GitHub rest api to get all packages of a certain type and user
-func GetUserPackages(configuration *config.Config) []github_model.UserPackage {
+func GetUserPackages(configuration *config.Config) (*[]github_model.UserPackage, error) {
 
 	response, err := get(gitHubUserUrl+"/"+configuration.User+"/packages", configuration, []queryParameter{{name: "package_type", value: configuration.PackageType}})
 
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 	if response.StatusCode >= 400 {
-		log.Fatal("StatusCode: ", response.StatusCode)
+		log.Println("An error status code occured: ", response.StatusCode)
 	}
 
 	responseData, err := io.ReadAll(response.Body)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	var packages []github_model.UserPackage
 
-	errUnmarshall := json.Unmarshal(responseData, &packages)
-	if errUnmarshall != nil {
-		log.Fatal(errUnmarshall)
+	err = json.Unmarshal(responseData, &packages)
+	if err != nil {
+		return nil, err
 	}
 
-	return packages
+	return &packages, nil
 }
 
 // calls GitHub rest api to get all packages of a certain type and user.
 // The result ist printed to log
-func GetAndPrintUserPackages(configuration *config.Config) []github_model.UserPackage {
+func GetAndPrintUserPackages(configuration *config.Config) (*[]github_model.UserPackage, error) {
 
-	var packages = GetUserPackages(configuration)
+	packages, err := GetUserPackages(configuration)
 
-	log.Println("Number of packages:", len(packages))
-	for i, p := range packages {
+	if err != nil {
+		return packages, err
+	}
+
+	log.Println("Number of packages:", len(*packages))
+	for i, p := range *packages {
 		log.Println(i+1, p.Name, p.Id)
 	}
 
-	return packages
+	return packages, nil
 }
 
-func get(url string, configuration *config.Config, parameters []queryParameter) (resp *http.Response, err error) {
+// Executes a get rest call
+func get(url string, configuration *config.Config, parameters []queryParameter) (*http.Response, error) {
 	c := http.Client{Timeout: time.Duration(1) * time.Second}
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	req.Header.Add("Accept", gitHubModelJsonType)
