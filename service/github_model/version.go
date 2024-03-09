@@ -1,16 +1,5 @@
 package github_model
 
-type JsonPackageType string
-
-const (
-	NPM       JsonPackageType = "npm"
-	MAVEN     JsonPackageType = "maven"
-	RUBYGEMS  JsonPackageType = "rubygems"
-	DOCKER    JsonPackageType = "docker"
-	NUGET     JsonPackageType = "nuget"
-	CONTAINER JsonPackageType = "container"
-)
-
 // package version definition for a user, see also: https://docs.github.com/en/rest/packages/packages?apiVersion=2022-11-28#get-a-package-version-for-a-user
 type Version struct {
 	Id             int      `json:"id"`
