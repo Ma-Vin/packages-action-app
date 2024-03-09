@@ -47,7 +47,7 @@ func GetAndPrintUserPackages(configuration *config.Config) []github_model.UserPa
 
 	log.Println("Number of packages:", len(packages))
 	for i, p := range packages {
-		log.Println(i, p.Name, p.Id)
+		log.Println(i+1, p.Name, p.Id)
 	}
 
 	return packages
