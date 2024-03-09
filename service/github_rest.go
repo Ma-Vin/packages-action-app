@@ -13,6 +13,8 @@ import (
 
 const gitHubUrl string = "https://api.github.com"
 const gitHubUserUrl string = gitHubUrl + "/users"
+const gitHubModelVersion string = "2022-11-28"
+const gitHubModelJsonType string = "application/vnd.github+json"
 
 type queryParameter struct {
 	name  string
@@ -59,9 +61,9 @@ func get(url string, configuration *config.Config, parameters []queryParameter) 
 		log.Fatal(err)
 	}
 
-	req.Header.Add("Accept", `application/vnd.github+json`)
+	req.Header.Add("Accept", gitHubModelJsonType)
 	req.Header.Add("Authorization", "Bearer "+configuration.GithubToken)
-	req.Header.Add("X-GitHub-Api-Version", "2022-11-28")
+	req.Header.Add("X-GitHub-Api-Version", gitHubModelVersion)
 
 	q := req.URL.Query()
 	for _, p := range parameters {
