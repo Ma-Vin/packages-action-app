@@ -22,7 +22,7 @@ type queryParameter struct {
 }
 
 // calls GitHub rest api to get all packages of a certain type and user
-func GetAndPrintUserPackages(configuration *config.Config) []github_model.UserPackage {
+func GetUserPackages(configuration *config.Config) []github_model.UserPackage {
 
 	response, err := get(gitHubUserUrl+"/"+configuration.User+"/packages", configuration, []queryParameter{{name: "package_type", value: configuration.PackageType}})
 
@@ -44,6 +44,15 @@ func GetAndPrintUserPackages(configuration *config.Config) []github_model.UserPa
 	if errUnmarshall != nil {
 		log.Fatal(errUnmarshall)
 	}
+
+	return packages
+}
+
+// calls GitHub rest api to get all packages of a certain type and user.
+// The result ist printed to log
+func GetAndPrintUserPackages(configuration *config.Config) []github_model.UserPackage {
+
+	var packages = GetUserPackages(configuration)
 
 	log.Println("Number of packages:", len(packages))
 	for i, p := range packages {
