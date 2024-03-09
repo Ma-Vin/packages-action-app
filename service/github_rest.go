@@ -24,7 +24,7 @@ type queryParameter struct {
 // calls GitHub rest api to get all packages of a certain type and user
 func GetAndPrintUserPackages(configuration *config.Config) []github_model.UserPackage {
 
-	response, err := get(gitHubUserUrl+"/"+configuration.User+"/packages", configuration, []queryParameter{{name: "package_type", value: config.MapFromPackageType(configuration.PackageType)}})
+	response, err := get(gitHubUserUrl+"/"+configuration.User+"/packages", configuration, []queryParameter{{name: "package_type", value: configuration.PackageType}})
 
 	if err != nil {
 		log.Fatal(err)

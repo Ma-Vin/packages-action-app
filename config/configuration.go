@@ -6,14 +6,11 @@ import (
 	"strings"
 )
 
-// type of possible supported packages
-type PackageType int
-
 const (
 	// package type for maven
-	MAVEN PackageType = iota
+	MAVEN string = "maven"
 	// package type for a not supported or unknown type
-	UNKNOWN PackageType = iota
+	UNKNOWN string = "unkown"
 )
 
 // structure to hold configuration of the action
@@ -23,7 +20,7 @@ type Config struct {
 	// user whose packages are to handle  (Either this or organization has to be set)
 	User string
 	// package type whiche are to handle (not nil)
-	PackageType PackageType
+	PackageType string
 	// name of the package (not nil)
 	PackageName string
 	// indicator whether to delete snapshots or not
@@ -65,24 +62,12 @@ func getTrimEnv(envName string) string {
 }
 
 // maps a given string to a package type
-func mapToPackageType(toMap string) PackageType {
+func mapToPackageType(toMap string) string {
 	switch strings.ToLower(toMap) {
-	case "maven":
+	case MAVEN:
 		return MAVEN
 	default:
 		return UNKNOWN
-	}
-}
-
-// maps a given to package type to a readable string
-func MapFromPackageType(toMap PackageType) string {
-	switch toMap {
-	case MAVEN:
-		return "maven"
-	case UNKNOWN:
-		return "unkown"
-	default:
-		return ""
 	}
 }
 
@@ -96,7 +81,7 @@ func printConfig(config *Config) {
 	log.Println("Read configuration", config.Organization)
 	log.Println("  Organization:    ", config.Organization)
 	log.Println("  User:            ", config.User)
-	log.Println("  PackageType:     ", MapFromPackageType(config.PackageType))
+	log.Println("  PackageType:     ", config.PackageType)
 	log.Println("  PackageName:     ", config.PackageName)
 	log.Println("  DeleteSnapshots: ", config.DeleteSnapshots)
 	if config.GithubToken != "" {
