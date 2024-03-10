@@ -73,7 +73,23 @@ func mapToPackageType(toMap string) string {
 
 // Checks whether a given configuration is valid or not
 func isValid(config *Config) bool {
-	return (config.Organization != "" || config.User != "") && config.PackageType != UNKNOWN && config.PackageName != "" && config.GithubToken != ""
+	if (config.Organization != "" && config.User != "") || (config.Organization == "" && config.User == "") {
+		log.Println("Fill exactly one: Either user or organization")
+		return false
+	}
+	if config.PackageType == UNKNOWN {
+		log.Println("The packagetype is unknown")
+		return false
+	}
+	if config.PackageName == "" {
+		log.Println("Missing package name")
+		return false
+	}
+	if config.GithubToken == "" {
+		log.Println("Missing GitHub token")
+		return false
+	}
+	return true
 }
 
 // prints a given configuration to the standard output
