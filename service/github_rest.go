@@ -6,6 +6,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -68,6 +69,21 @@ func GetUserPackageVersions(packageName string, configuration *config.Config) (*
 	return &versions, mapJsonResponse(response, &versions)
 }
 
+// calls GitHub rest api to get a version of a certain package, type and user.
+// /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}
+func GetUserPackageVersion(packageName string, versionId int, configuration *config.Config) (*github_model.Version, error) {
+	url := concatUrl(gitHubUserUrl, configuration.User, "packages", configuration.PackageType, packageName, "versions", strconv.Itoa(versionId))
+	response, err := get(url, configuration, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var version github_model.Version
+
+	return &version, mapJsonResponse(response, &version)
+}
+
 // calls GitHub rest api to get all packages of a certain type and user.
 // The result is printed to log
 func GetAndPrintUserPackages(configuration *config.Config) (*[]github_model.UserPackage, error) {
@@ -117,6 +133,21 @@ func GetAndPrintUserPackageVersions(packageName string, configuration *config.Co
 	}
 
 	return versions, nil
+}
+
+// calls GitHub rest api to get a version of a certain package, type and user
+// The result is printed to log
+func GetAndPrintUserPackageVersion(packageName string, versionId int, configuration *config.Config) (*github_model.Version, error) {
+
+	version, err := GetUserPackageVersion(packageName, versionId, configuration)
+
+	if err != nil {
+		return version, err
+	}
+
+	log.Println(version.Name, version.Id)
+
+	return version, nil
 }
 
 // maps the the json body of a response to a given target object
