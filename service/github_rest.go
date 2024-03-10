@@ -54,6 +54,22 @@ func GetUserPackage(packageName string, configuration *config.Config) (*github_m
 	return &userPackage, mapJsonResponse(response, &userPackage)
 }
 
+// calls GitHub rest api to get a package of a certain type and user
+// /users/{username}/packages/{package_type}/{package_name}
+func DeleteUserPackage(packageName string, configuration *config.Config) error {
+	url := concatUrl(gitHubUserUrl, configuration.User, "packages", configuration.PackageType, packageName)
+
+	response, err := delete(url, configuration, nil)
+
+	if err != nil {
+		return err
+	}
+	if response.StatusCode >= 400 {
+		return fmt.Errorf("an error status code occured: %d - %s", response.StatusCode, http.StatusText(response.StatusCode))
+	}
+	return nil
+}
+
 // calls GitHub rest api to get all versions of a certain package, type and user.
 // /users/{username}/packages/{package_type}/{package_name}/versions
 func GetUserPackageVersions(packageName string, configuration *config.Config) (*[]github_model.Version, error) {
@@ -153,7 +169,7 @@ func GetAndPrintUserPackageVersion(packageName string, versionId int, configurat
 // maps the the json body of a response to a given target object
 func mapJsonResponse(response *http.Response, target any) error {
 	if response.StatusCode >= 400 {
-		return fmt.Errorf("an error status code occured: %d", response.StatusCode)
+		return fmt.Errorf("an error status code occured: %d - %s", response.StatusCode, http.StatusText(response.StatusCode))
 	}
 
 	responseData, err := io.ReadAll(response.Body)
@@ -171,24 +187,42 @@ func mapJsonResponse(response *http.Response, target any) error {
 
 // Executes a get rest call
 func get(url string, configuration *config.Config, parameters []queryParameter) (*http.Response, error) {
+	return executeRequestWithoutBody(http.MethodGet, url, configuration, parameters)
+}
+
+// Executes a delete rest call
+func delete(url string, configuration *config.Config, parameters []queryParameter) (*http.Response, error) {
+	return executeRequestWithoutBody(http.MethodDelete, url, configuration, parameters)
+}
+
+func executeRequestWithoutBody(operation string, url string, configuration *config.Config, parameters []queryParameter) (*http.Response, error) {
 	c := http.Client{Timeout: time.Duration(1) * time.Second}
 
-	req, err := http.NewRequest("GET", url, nil)
+	req, err := http.NewRequest(operation, url, nil)
 	if err != nil {
 		return nil, err
 	}
 
+	addHeader(req, configuration)
+	addUrlQueryParameters(req, &parameters)
+
+	return c.Do(req)
+}
+
+// adds the default header elements for a call against GitHub rest api
+func addHeader(req *http.Request, configuration *config.Config) {
 	req.Header.Add("Accept", gitHubModelJsonType)
 	req.Header.Add("Authorization", "Bearer "+configuration.GithubToken)
 	req.Header.Add("X-GitHub-Api-Version", gitHubModelVersion)
+}
 
+// add query parameters to an url of a given request
+func addUrlQueryParameters(req *http.Request, parameters *[]queryParameter) {
 	q := req.URL.Query()
-	for _, p := range parameters {
+	for _, p := range *parameters {
 		q.Add(p.name, p.value)
 	}
 	req.URL.RawQuery = q.Encode()
-
-	return c.Do(req)
 }
 
 func concatUrl(urlParts ...string) string {
