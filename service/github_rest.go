@@ -100,6 +100,22 @@ func GetUserPackageVersion(packageName string, versionId int, configuration *con
 	return &version, mapJsonResponse(response, &version)
 }
 
+// calls GitHub rest api to get a package of a certain type and user
+// /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}
+func DeleteUserPackageVersion(packageName string, versionId int, configuration *config.Config) error {
+	url := concatUrl(gitHubUserUrl, configuration.User, "packages", configuration.PackageType, packageName, strconv.Itoa(versionId))
+
+	response, err := delete(url, configuration, nil)
+
+	if err != nil {
+		return err
+	}
+	if response.StatusCode >= 400 {
+		return fmt.Errorf("an error status code occured: %d - %s", response.StatusCode, http.StatusText(response.StatusCode))
+	}
+	return nil
+}
+
 // calls GitHub rest api to get all packages of a certain type and user.
 // The result is printed to log
 func GetAndPrintUserPackages(configuration *config.Config) (*[]github_model.UserPackage, error) {
