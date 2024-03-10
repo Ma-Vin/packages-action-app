@@ -53,6 +53,21 @@ func GetUserPackage(packageName string, configuration *config.Config) (*github_m
 	return &userPackage, mapJsonResponse(response, &userPackage)
 }
 
+// calls GitHub rest api to get all versions of a certain package, type and user.
+// /users/{username}/packages/{package_type}/{package_name}/versions
+func GetUserPackageVersions(packageName string, configuration *config.Config) (*[]github_model.Version, error) {
+	url := concatUrl(gitHubUserUrl, configuration.User, "packages", configuration.PackageType, packageName, "versions")
+	response, err := get(url, configuration, nil)
+
+	if err != nil {
+		return nil, err
+	}
+
+	var versions []github_model.Version
+
+	return &versions, mapJsonResponse(response, &versions)
+}
+
 // calls GitHub rest api to get all packages of a certain type and user.
 // The result is printed to log
 func GetAndPrintUserPackages(configuration *config.Config) (*[]github_model.UserPackage, error) {
@@ -84,6 +99,24 @@ func GetAndPrintUserPackage(packageName string, configuration *config.Config) (*
 	log.Println(userPackage.Name, userPackage.Id)
 
 	return userPackage, nil
+}
+
+// calls GitHub rest api to get all versions of a certain package, type and user.
+// The result is printed to log
+func GetAndPrintUserPackageVersions(packageName string, configuration *config.Config) (*[]github_model.Version, error) {
+
+	versions, err := GetUserPackageVersions(packageName, configuration)
+
+	if err != nil {
+		return versions, err
+	}
+
+	log.Println("Number of versions:", len(*versions))
+	for i, p := range *versions {
+		log.Println(i+1, p.Name, p.Id)
+	}
+
+	return versions, nil
 }
 
 // maps the the json body of a response to a given target object
