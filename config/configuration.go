@@ -44,7 +44,11 @@ Reads the configuration from environment variables:
   - USER
   - PACKAGE_TYPE
   - PACKAGE_NAME
+  - VERSION_NAME_TO_DELETE
   - DELETE_SNAPSHOTS
+  - NUMBER_MAJOR_TO_KEEP
+  - NUMBER_MINOR_TO_KEEP
+  - NUMBER_PATCH_TO_KEEP
   - GITHUB_TOKEN
 */
 func ReadConfiguration() *Config {
