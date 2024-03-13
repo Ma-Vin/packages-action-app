@@ -45,8 +45,13 @@ func GetUserPackages(configuration *config.Config) (*[]github_model.UserPackage,
 	}
 
 	var userPackages []github_model.UserPackage
+	err = mapJsonResponse(response, &userPackages)
 
-	return &userPackages, mapJsonResponse(response, &userPackages)
+	if err != nil {
+		return nil, err
+	}
+
+	return &userPackages, nil
 }
 
 // calls GitHub rest api to get a package of a certain type and user.
@@ -60,8 +65,12 @@ func GetUserPackage(packageName string, configuration *config.Config) (*github_m
 	}
 
 	var userPackage github_model.UserPackage
+	err = mapJsonResponse(response, &userPackage)
 
-	return &userPackage, mapJsonResponse(response, &userPackage)
+	if err != nil {
+		return nil, err
+	}
+	return &userPackage, nil
 }
 
 // calls GitHub rest api to get a package of a certain type and user
@@ -91,8 +100,12 @@ func GetUserPackageVersions(packageName string, configuration *config.Config) (*
 	}
 
 	var versions []github_model.Version
+	err = mapJsonResponse(response, &versions)
 
-	return &versions, mapJsonResponse(response, &versions)
+	if err != nil {
+		return nil, err
+	}
+	return &versions, nil
 }
 
 // calls GitHub rest api to get a version of a certain package, type and user.
@@ -106,8 +119,12 @@ func GetUserPackageVersion(packageName string, versionId int, configuration *con
 	}
 
 	var version github_model.Version
+	err = mapJsonResponse(response, &version)
 
-	return &version, mapJsonResponse(response, &version)
+	if err != nil {
+		return nil, err
+	}
+	return &version, nil
 }
 
 // calls GitHub rest api to get a package of a certain type and user
