@@ -41,6 +41,18 @@ const packageResponse = `{
 	}
   }`
 
+const versionResponse = `{
+	"id": 123456,
+	"name": "1.2.3",
+	"license": "MIT",
+	"created_at": "2024-03-12T20:00:00Z",
+	"updated_at": "2024-03-12T20:00:00Z",
+	"description": "Dummy version",
+	"metadata": {
+	  "package_type": "maven"
+	}
+  }`
+
 var conf = config.Config{User: "DummyUser", PackageType: "maven", PackageName: "DummyPackage"}
 
 type mockCloser struct {
@@ -83,8 +95,19 @@ func createDefaultPackagesArrayResponse() *http.Response {
 	return createResponse(&body, 200)
 }
 
+func createDefaultVersionResponse() *http.Response {
+	var body = versionResponse
+	return createResponse(&body, 200)
+}
+
+func createDefaultVersionsArrayResponse() *http.Response {
+	var body = fmt.Sprintf("[%s]", versionResponse)
+	return createResponse(&body, 200)
+}
+
 func TestGetUserPackageSuccessful(t *testing.T) {
 	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+		testutil.AssertEquals("https://api.github.com/users/DummyUser/packages/maven/DummyPackage", req.URL.String(), t, "request url")
 		return createDefaultPackageResponse(), nil
 	})
 
@@ -151,16 +174,17 @@ func TestGetUserPackageWithInvalidJsonError(t *testing.T) {
 
 func TestGetUserPackagesArraySuccessful(t *testing.T) {
 	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+		testutil.AssertEquals("https://api.github.com/users/DummyUser/packages?package_type=maven", req.URL.String(), t, "request url")
 		return createDefaultPackagesArrayResponse(), nil
 	})
 
-	userPackage, err := GetUserPackages(&conf)
+	userPackages, err := GetUserPackages(&conf)
 
-	testutil.AssertNotNil(userPackage, t, "userPackage")
+	testutil.AssertNotNil(userPackages, t, "userPackages")
 
-	testutil.AssertEquals(1, len(*userPackage), t, "package id")
-	testutil.AssertEquals(123456, (*userPackage)[0].Id, t, "package id")
-	testutil.AssertEquals(github_model.MAVEN, (*userPackage)[0].PackageType, t, "package type")
+	testutil.AssertEquals(1, len(*userPackages), t, "package id")
+	testutil.AssertEquals(123456, (*userPackages)[0].Id, t, "package id")
+	testutil.AssertEquals(github_model.MAVEN, (*userPackages)[0].PackageType, t, "package type")
 	testutil.AssertNil(err, t, "err")
 }
 
@@ -169,23 +193,23 @@ func TestGetUserPackagesArrayWithError(t *testing.T) {
 		return nil, errors.New("SomeTestError")
 	})
 
-	userPackage, err := GetUserPackages(&conf)
+	userPackages, err := GetUserPackages(&conf)
 
-	testutil.AssertNil(userPackage, t, "userPackage")
+	testutil.AssertNil(userPackages, t, "userPackages")
 	testutil.AssertNotNil(err, t, "err")
 	testutil.AssertEquals("SomeTestError", err.Error(), t, "error message")
 }
 
 func TestGetUserPackagesArrayWithErrorHttpStatus(t *testing.T) {
 	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
-		res := createDefaultPackageResponse()
+		res := createDefaultPackagesArrayResponse()
 		res.StatusCode = 400
 		return res, nil
 	})
 
-	userPackage, err := GetUserPackages(&conf)
+	userPackages, err := GetUserPackages(&conf)
 
-	testutil.AssertNil(userPackage, t, "userPackage")
+	testutil.AssertNil(userPackages, t, "userPackages")
 	testutil.AssertNotNil(err, t, "err")
 	testutil.AssertEquals("an error status code occured: 400 - Bad Request", err.Error(), t, "error message")
 }
@@ -196,9 +220,9 @@ func TestGetUserPackagesArrayWithBodyIoError(t *testing.T) {
 		return res, nil
 	})
 
-	userPackage, err := GetUserPackages(&conf)
+	userPackages, err := GetUserPackages(&conf)
 
-	testutil.AssertNil(userPackage, t, "userPackage")
+	testutil.AssertNil(userPackages, t, "userPackages")
 	testutil.AssertNotNil(err, t, "err")
 	testutil.AssertEquals("IoTestError", err.Error(), t, "error message")
 }
@@ -210,9 +234,76 @@ func TestGetUserPackagesArrayWithInvalidJsonError(t *testing.T) {
 		return res, nil
 	})
 
-	userPackage, err := GetUserPackages(&conf)
+	userPackages, err := GetUserPackages(&conf)
 
-	testutil.AssertNil(userPackage, t, "userPackage")
+	testutil.AssertNil(userPackages, t, "userPackages")
+	testutil.AssertNotNil(err, t, "err")
+	testutil.AssertEquals("unexpected end of JSON input", err.Error(), t, "error message")
+}
+
+func TestGetGetUserPackageVersionSuccessful(t *testing.T) {
+	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+		testutil.AssertEquals("https://api.github.com/users/DummyUser/packages/maven/DummyPackage/versions/123456", req.URL.String(), t, "request url")
+		return createDefaultVersionResponse(), nil
+	})
+
+	version, err := GetUserPackageVersion(conf.PackageName, 123456, &conf)
+
+	testutil.AssertNotNil(version, t, "version")
+	testutil.AssertEquals(123456, version.Id, t, "package id")
+	testutil.AssertEquals("1.2.3", version.Name, t, "name")
+	testutil.AssertNil(err, t, "err")
+}
+
+func TestGetGetUserPackageVersionWithError(t *testing.T) {
+	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+		return nil, errors.New("SomeTestError")
+	})
+
+	version, err := GetUserPackageVersion(conf.PackageName, 123456, &conf)
+
+	testutil.AssertNil(version, t, "version")
+	testutil.AssertNotNil(err, t, "err")
+	testutil.AssertEquals("SomeTestError", err.Error(), t, "error message")
+}
+
+func TestGetGetUserPackageVersionWithErrorHttpStatus(t *testing.T) {
+	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+		res := createDefaultVersionResponse()
+		res.StatusCode = 400
+		return res, nil
+	})
+
+	version, err := GetUserPackageVersion(conf.PackageName, 123456, &conf)
+
+	testutil.AssertNil(version, t, "version")
+	testutil.AssertNotNil(err, t, "err")
+	testutil.AssertEquals("an error status code occured: 400 - Bad Request", err.Error(), t, "error message")
+}
+
+func TestGetGetUserPackageVersionWithBodyIoError(t *testing.T) {
+	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+		res := createResponseWithIoError(200)
+		return res, nil
+	})
+
+	version, err := GetUserPackageVersion(conf.PackageName, 123456, &conf)
+
+	testutil.AssertNil(version, t, "version")
+	testutil.AssertNotNil(err, t, "err")
+	testutil.AssertEquals("IoTestError", err.Error(), t, "error message")
+}
+
+func TestGetGetUserPackageVersionWithInvalidJsonError(t *testing.T) {
+	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+		var body = ""
+		res := createResponse(&body, 200)
+		return res, nil
+	})
+
+	version, err := GetUserPackageVersion(conf.PackageName, 123456, &conf)
+
+	testutil.AssertNil(version, t, "version")
 	testutil.AssertNotNil(err, t, "err")
 	testutil.AssertEquals("unexpected end of JSON input", err.Error(), t, "error message")
 }
