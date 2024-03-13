@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -141,72 +140,6 @@ func DeleteUserPackageVersion(packageName string, versionId int, configuration *
 		return fmt.Errorf("an error status code occured: %d - %s", response.StatusCode, http.StatusText(response.StatusCode))
 	}
 	return nil
-}
-
-// calls GitHub rest api to get all packages of a certain type and user.
-// The result is printed to log
-func GetAndPrintUserPackages(configuration *config.Config) (*[]github_model.UserPackage, error) {
-
-	userPackages, err := GetUserPackages(configuration)
-
-	if err != nil {
-		return userPackages, err
-	}
-
-	log.Println("Number of packages:", len(*userPackages))
-	for i, p := range *userPackages {
-		log.Println(i+1, p.Name, p.Id)
-	}
-
-	return userPackages, nil
-}
-
-// calls GitHub rest api to get a package of a certain type and user.
-// The result is printed to log
-func GetAndPrintUserPackage(packageName string, configuration *config.Config) (*github_model.UserPackage, error) {
-
-	userPackage, err := GetUserPackage(packageName, configuration)
-
-	if err != nil {
-		return userPackage, err
-	}
-
-	log.Println(userPackage.Name, userPackage.Id)
-
-	return userPackage, nil
-}
-
-// calls GitHub rest api to get all versions of a certain package, type and user.
-// The result is printed to log
-func GetAndPrintUserPackageVersions(packageName string, configuration *config.Config) (*[]github_model.Version, error) {
-
-	versions, err := GetUserPackageVersions(packageName, configuration)
-
-	if err != nil {
-		return versions, err
-	}
-
-	log.Println("Number of versions:", len(*versions))
-	for i, p := range *versions {
-		log.Println(i+1, p.Name, p.Id)
-	}
-
-	return versions, nil
-}
-
-// calls GitHub rest api to get a version of a certain package, type and user
-// The result is printed to log
-func GetAndPrintUserPackageVersion(packageName string, versionId int, configuration *config.Config) (*github_model.Version, error) {
-
-	version, err := GetUserPackageVersion(packageName, versionId, configuration)
-
-	if err != nil {
-		return version, err
-	}
-
-	log.Println(version.Name, version.Id)
-
-	return version, nil
 }
 
 // maps the the json body of a response to a given target object

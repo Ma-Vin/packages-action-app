@@ -4,7 +4,6 @@ import (
 	"log"
 
 	"github.com/ma-vin/packages-action/config"
-	"github.com/ma-vin/packages-action/service"
 )
 
 // Main funtion to execute the actions process
@@ -17,16 +16,11 @@ func main() {
 		log.Fatalln("Packages action failed")
 	}
 
-	packages, err := service.GetAndPrintUserPackages(loadedConfig)
+	log.Println("Packages action done")
+}
+
+func checkkError(err error) {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	if len(*packages) > 1 {
-		_, err = service.GetAndPrintUserPackage((*packages)[0].Name, loadedConfig)
-		if err != nil {
-			log.Fatalln(err)
-		}
-	}
-
-	log.Println("Packages action done")
 }
