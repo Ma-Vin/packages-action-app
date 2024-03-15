@@ -82,10 +82,7 @@ func DeleteUserPackage(packageName string, configuration *config.Config) error {
 	if err != nil {
 		return err
 	}
-	if response.StatusCode >= 400 {
-		return fmt.Errorf("an error status code occured: %d - %s", response.StatusCode, http.StatusText(response.StatusCode))
-	}
-	return nil
+	return checkResponseStatusCode(response)
 }
 
 // calls GitHub rest api to get all versions of a certain package, type and user.
@@ -136,16 +133,14 @@ func DeleteUserPackageVersion(packageName string, versionId int, configuration *
 	if err != nil {
 		return err
 	}
-	if response.StatusCode >= 400 {
-		return fmt.Errorf("an error status code occured: %d - %s", response.StatusCode, http.StatusText(response.StatusCode))
-	}
-	return nil
+	return checkResponseStatusCode(response)
 }
 
 // maps the the json body of a response to a given target object
 func mapJsonResponse(response *http.Response, target any) error {
-	if response.StatusCode >= 400 {
-		return fmt.Errorf("an error status code occured: %d - %s", response.StatusCode, http.StatusText(response.StatusCode))
+	err := checkResponseStatusCode(response)
+	if err != nil {
+		return err
 	}
 
 	responseData, err := io.ReadAll(response.Body)
@@ -210,4 +205,12 @@ func concatUrl(urlParts ...string) string {
 		}
 	}
 	return sb.String()
+}
+
+// checks if the response has a failure status code and creates in this case an error
+func checkResponseStatusCode(response *http.Response) error {
+	if response.StatusCode >= 400 {
+		return fmt.Errorf("an error status code occured: %d - %s", response.StatusCode, http.StatusText(response.StatusCode))
+	}
+	return nil
 }
