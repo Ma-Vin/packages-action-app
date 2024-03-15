@@ -12,6 +12,17 @@ const (
 	MAVEN string = "maven"
 	// package type for a not supported or unknown type
 	UNKNOWN string = "unkown"
+
+	ENV_NAME_ORGANIZATION           string = "ORGANIZATION"
+	ENV_NAME_USER                   string = "USER"
+	ENV_NAME_PACKAGE_TYPE           string = "PACKAGE_TYPE"
+	ENV_NAME_PACKAGE_NAME           string = "PACKAGE_NAME"
+	ENV_NAME_VERSION_NAME_TO_DELETE string = "VERSION_NAME_TO_DELETE"
+	ENV_NAME_DELETE_SNAPSHOTS       string = "DELETE_SNAPSHOTS"
+	ENV_NAME_NUMBER_MAJOR_TO_KEEP   string = "NUMBER_MAJOR_TO_KEEP"
+	ENV_NAME_NUMBER_MINOR_TO_KEEP   string = "NUMBER_MINOR_TO_KEEP"
+	ENV_NAME_NUMBER_PATCH_TO_KEEP   string = "NUMBER_PATCH_TO_KEEP"
+	ENV_NAME_GITHUB_TOKEN           string = "GITHUB_TOKEN"
 )
 
 // structure to hold configuration of the action
@@ -53,16 +64,16 @@ Reads the configuration from environment variables:
 */
 func ReadConfiguration() *Config {
 	var config Config
-	config.Organization = getTrimEnv("ORGANIZATION")
-	config.User = getTrimEnv("USER")
-	config.PackageType = mapToPackageType(getTrimEnv("PACKAGE_TYPE"))
-	config.PackageName = getTrimEnv("PACKAGE_NAME")
-	config.VersionNameToDelete = getTrimEnv("VERSION_NAME_TO_DELETE")
-	config.DeleteSnapshots = getBoolEnv("DELETE_SNAPSHOTS")
-	config.NumberOfMajorVersionsToKeep = getIntEnv("NUMBER_MAJOR_TO_KEEP")
-	config.NumberOfMinorVersionsToKeep = getIntEnv("NUMBER_MINOR_TO_KEEP")
-	config.NumberOfPatchVersionsToKeep = getIntEnv("NUMBER_PATCH_TO_KEEP")
-	config.GithubToken = getTrimEnv("GITHUB_TOKEN")
+	config.Organization = getTrimEnv(ENV_NAME_ORGANIZATION)
+	config.User = getTrimEnv(ENV_NAME_USER)
+	config.PackageType = mapToPackageType(getTrimEnv(ENV_NAME_PACKAGE_TYPE))
+	config.PackageName = getTrimEnv(ENV_NAME_PACKAGE_NAME)
+	config.VersionNameToDelete = getTrimEnv(ENV_NAME_VERSION_NAME_TO_DELETE)
+	config.DeleteSnapshots = getBoolEnv(ENV_NAME_DELETE_SNAPSHOTS)
+	config.NumberOfMajorVersionsToKeep = getIntEnv(ENV_NAME_NUMBER_MAJOR_TO_KEEP)
+	config.NumberOfMinorVersionsToKeep = getIntEnv(ENV_NAME_NUMBER_MINOR_TO_KEEP)
+	config.NumberOfPatchVersionsToKeep = getIntEnv(ENV_NAME_NUMBER_PATCH_TO_KEEP)
+	config.GithubToken = getTrimEnv(ENV_NAME_GITHUB_TOKEN)
 
 	printConfig(&config)
 
@@ -159,6 +170,7 @@ func printConfig(config *Config) {
 func printPositiv(text string, value int) {
 	if 0 < value {
 		log.Println(text, value)
+		return
 	}
 	log.Println(text)
 }
