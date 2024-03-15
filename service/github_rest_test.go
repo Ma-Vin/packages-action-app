@@ -105,9 +105,22 @@ func createDefaultVersionsArrayResponse() *http.Response {
 	return createResponse(&body, 200)
 }
 
+func checkGetRequest(req *http.Request, url string, t *testing.T) {
+	checkRequest(req, url, http.MethodGet, t)
+}
+
+func checkDeleteRequest(req *http.Request, url string, t *testing.T) {
+	checkRequest(req, url, http.MethodDelete, t)
+}
+
+func checkRequest(req *http.Request, url string, method string, t *testing.T) {
+	testutil.AssertEquals(url, req.URL.String(), t, "request url")
+	testutil.AssertEquals(method, req.Method, t, "request method")
+}
+
 func TestGetUserPackageSuccessful(t *testing.T) {
 	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
-		testutil.AssertEquals("https://api.github.com/users/DummyUser/packages/maven/DummyPackage", req.URL.String(), t, "request url")
+		checkGetRequest(req, "https://api.github.com/users/DummyUser/packages/maven/DummyPackage", t)
 		return createDefaultPackageResponse(), nil
 	})
 
@@ -174,7 +187,7 @@ func TestGetUserPackageWithInvalidJsonError(t *testing.T) {
 
 func TestGetUserPackagesArraySuccessful(t *testing.T) {
 	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
-		testutil.AssertEquals("https://api.github.com/users/DummyUser/packages?package_type=maven", req.URL.String(), t, "request url")
+		checkGetRequest(req, "https://api.github.com/users/DummyUser/packages?package_type=maven", t)
 		return createDefaultPackagesArrayResponse(), nil
 	})
 
@@ -243,7 +256,7 @@ func TestGetUserPackagesArrayWithInvalidJsonError(t *testing.T) {
 
 func TestGetGetUserPackageVersionSuccessful(t *testing.T) {
 	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
-		testutil.AssertEquals("https://api.github.com/users/DummyUser/packages/maven/DummyPackage/versions/123456", req.URL.String(), t, "request url")
+		checkGetRequest(req, "https://api.github.com/users/DummyUser/packages/maven/DummyPackage/versions/123456", t)
 		return createDefaultVersionResponse(), nil
 	})
 
@@ -310,7 +323,7 @@ func TestGetGetUserPackageVersionWithInvalidJsonError(t *testing.T) {
 
 func TestGetGetUserPackageVersionsArraySuccessful(t *testing.T) {
 	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
-		testutil.AssertEquals("https://api.github.com/users/DummyUser/packages/maven/DummyPackage/versions", req.URL.String(), t, "request url")
+		checkGetRequest(req, "https://api.github.com/users/DummyUser/packages/maven/DummyPackage/versions", t)
 		return createDefaultVersionsArrayResponse(), nil
 	})
 
@@ -374,4 +387,78 @@ func TestGetGetUserPackageVersionsArrayWithInvalidJsonError(t *testing.T) {
 	testutil.AssertNil(versions, t, "versions")
 	testutil.AssertNotNil(err, t, "err")
 	testutil.AssertEquals("unexpected end of JSON input", err.Error(), t, "error message")
+}
+
+func TestDeleteUserPackageSuccessful(t *testing.T) {
+	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+		checkDeleteRequest(req, "https://api.github.com/users/DummyUser/packages/maven/DummyPackage", t)
+		var body = ""
+		res := createResponse(&body, 200)
+		return res, nil
+	})
+
+	err := DeleteUserPackage(conf.PackageName, &conf)
+
+	testutil.AssertNil(err, t, "err")
+}
+
+func TestDeleteUserPackageWithError(t *testing.T) {
+	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+		return nil, errors.New("SomeTestError")
+	})
+
+	err := DeleteUserPackage(conf.PackageName, &conf)
+
+	testutil.AssertNotNil(err, t, "err")
+	testutil.AssertEquals("SomeTestError", err.Error(), t, "error message")
+}
+
+func TestDeleteUserPackageWithErrorHttpStatus(t *testing.T) {
+	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+		var body = ""
+		res := createResponse(&body, 400)
+		return res, nil
+	})
+
+	err := DeleteUserPackage(conf.PackageName, &conf)
+
+	testutil.AssertNotNil(err, t, "err")
+	testutil.AssertEquals("an error status code occured: 400 - Bad Request", err.Error(), t, "error message")
+}
+
+func TestDeleteUserPackageVersionSuccessful(t *testing.T) {
+	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+		checkDeleteRequest(req, "https://api.github.com/users/DummyUser/packages/maven/DummyPackage/versions/1", t)
+		var body = ""
+		res := createResponse(&body, 200)
+		return res, nil
+	})
+
+	err := DeleteUserPackageVersion(conf.PackageName, 1, &conf)
+
+	testutil.AssertNil(err, t, "err")
+}
+
+func TestDeleteUserPackageVersionWithError(t *testing.T) {
+	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+		return nil, errors.New("SomeTestError")
+	})
+
+	err := DeleteUserPackageVersion(conf.PackageName, 1, &conf)
+
+	testutil.AssertNotNil(err, t, "err")
+	testutil.AssertEquals("SomeTestError", err.Error(), t, "error message")
+}
+
+func TestDeleteUserPackageVersionWithErrorHttpStatus(t *testing.T) {
+	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+		var body = ""
+		res := createResponse(&body, 400)
+		return res, nil
+	})
+
+	err := DeleteUserPackageVersion(conf.PackageName, 1, &conf)
+
+	testutil.AssertNotNil(err, t, "err")
+	testutil.AssertEquals("an error status code occured: 400 - Bad Request", err.Error(), t, "error message")
 }
