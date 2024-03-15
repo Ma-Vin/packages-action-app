@@ -18,6 +18,9 @@ const gitHubUserUrl string = gitHubUrl + "/users"
 const gitHubModelVersion string = "2022-11-28"
 const gitHubModelJsonType string = "application/vnd.github+json"
 
+const packages_url_part string = "packages"
+const versions_url_part string = "versions"
+
 type queryParameter struct {
 	name  string
 	value string
@@ -36,7 +39,7 @@ var clientExecutor ClientExecutor = func(c *http.Client, req *http.Request) (*ht
 // calls GitHub rest api to get all packages of a certain type and user.
 // /users/{username}/packages
 func GetUserPackages(configuration *config.Config) (*[]github_model.UserPackage, error) {
-	url := concatUrl(gitHubUserUrl, configuration.User, "packages")
+	url := concatUrl(gitHubUserUrl, configuration.User, packages_url_part)
 	response, err := get(url, configuration, []queryParameter{{name: "package_type", value: configuration.PackageType}})
 
 	if err != nil {
@@ -56,7 +59,7 @@ func GetUserPackages(configuration *config.Config) (*[]github_model.UserPackage,
 // calls GitHub rest api to get a package of a certain type and user.
 // users/{username}/packages/{package_type}/{package_name}
 func GetUserPackage(packageName string, configuration *config.Config) (*github_model.UserPackage, error) {
-	url := concatUrl(gitHubUserUrl, configuration.User, "packages", configuration.PackageType, packageName)
+	url := concatUrl(gitHubUserUrl, configuration.User, packages_url_part, configuration.PackageType, packageName)
 	response, err := get(url, configuration, nil)
 
 	if err != nil {
@@ -75,7 +78,7 @@ func GetUserPackage(packageName string, configuration *config.Config) (*github_m
 // calls GitHub rest api to get a package of a certain type and user
 // /users/{username}/packages/{package_type}/{package_name}
 func DeleteUserPackage(packageName string, configuration *config.Config) error {
-	url := concatUrl(gitHubUserUrl, configuration.User, "packages", configuration.PackageType, packageName)
+	url := concatUrl(gitHubUserUrl, configuration.User, packages_url_part, configuration.PackageType, packageName)
 
 	response, err := delete(url, configuration, nil)
 
@@ -88,7 +91,7 @@ func DeleteUserPackage(packageName string, configuration *config.Config) error {
 // calls GitHub rest api to get all versions of a certain package, type and user.
 // /users/{username}/packages/{package_type}/{package_name}/versions
 func GetUserPackageVersions(packageName string, configuration *config.Config) (*[]github_model.Version, error) {
-	url := concatUrl(gitHubUserUrl, configuration.User, "packages", configuration.PackageType, packageName, "versions")
+	url := concatUrl(gitHubUserUrl, configuration.User, packages_url_part, configuration.PackageType, packageName, versions_url_part)
 	response, err := get(url, configuration, nil)
 
 	if err != nil {
@@ -107,7 +110,7 @@ func GetUserPackageVersions(packageName string, configuration *config.Config) (*
 // calls GitHub rest api to get a version of a certain package, type and user.
 // /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}
 func GetUserPackageVersion(packageName string, versionId int, configuration *config.Config) (*github_model.Version, error) {
-	url := concatUrl(gitHubUserUrl, configuration.User, "packages", configuration.PackageType, packageName, "versions", strconv.Itoa(versionId))
+	url := concatUrl(gitHubUserUrl, configuration.User, packages_url_part, configuration.PackageType, packageName, versions_url_part, strconv.Itoa(versionId))
 	response, err := get(url, configuration, nil)
 
 	if err != nil {
@@ -126,7 +129,7 @@ func GetUserPackageVersion(packageName string, versionId int, configuration *con
 // calls GitHub rest api to get a package of a certain type and user
 // /users/{username}/packages/{package_type}/{package_name}/versions/{package_version_id}
 func DeleteUserPackageVersion(packageName string, versionId int, configuration *config.Config) error {
-	url := concatUrl(gitHubUserUrl, configuration.User, "packages", configuration.PackageType, packageName, strconv.Itoa(versionId))
+	url := concatUrl(gitHubUserUrl, configuration.User, packages_url_part, configuration.PackageType, packageName, versions_url_part, strconv.Itoa(versionId))
 
 	response, err := delete(url, configuration, nil)
 
