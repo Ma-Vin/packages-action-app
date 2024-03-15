@@ -1,3 +1,5 @@
+![Go Workflow Action](https://github.com/Ma-Vin/packages-action-app/actions/workflows/go.yml/badge.svg)
+
 # Package Action Application
 :baby_chick: Just some try out of GoLang and GitHub rest api
 
