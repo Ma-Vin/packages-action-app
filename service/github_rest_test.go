@@ -13,7 +13,7 @@ import (
 	"github.com/ma-vin/packages-action/testutil"
 )
 
-const packageResponse = `{
+const packageJsonResponse = `{
 	"id": 123456,
 	"name": "DummyPackage",
 	"package_type": "maven",
@@ -41,7 +41,7 @@ const packageResponse = `{
 	}
   }`
 
-const versionResponse = `{
+const versionJsonResponse = `{
 	"id": 123456,
 	"name": "1.2.3",
 	"license": "MIT",
@@ -53,7 +53,7 @@ const versionResponse = `{
 	}
   }`
 
-var conf = config.Config{User: "DummyUser", PackageType: "maven", PackageName: "DummyPackage"}
+var restConf = config.Config{User: "DummyUser", PackageType: "maven", PackageName: "DummyPackage"}
 
 type mockCloser struct {
 	mockIoErrorReader
@@ -86,22 +86,22 @@ func createResponseWithIoError(httpStatus int) *http.Response {
 }
 
 func createDefaultPackageResponse() *http.Response {
-	var body = packageResponse
+	var body = packageJsonResponse
 	return createResponse(&body, 200)
 }
 
 func createDefaultPackagesArrayResponse() *http.Response {
-	var body = fmt.Sprintf("[%s]", packageResponse)
+	var body = fmt.Sprintf("[%s]", packageJsonResponse)
 	return createResponse(&body, 200)
 }
 
 func createDefaultVersionResponse() *http.Response {
-	var body = versionResponse
+	var body = versionJsonResponse
 	return createResponse(&body, 200)
 }
 
 func createDefaultVersionsArrayResponse() *http.Response {
-	var body = fmt.Sprintf("[%s]", versionResponse)
+	var body = fmt.Sprintf("[%s]", versionJsonResponse)
 	return createResponse(&body, 200)
 }
 
@@ -124,7 +124,7 @@ func TestGetUserPackageSuccessful(t *testing.T) {
 		return createDefaultPackageResponse(), nil
 	})
 
-	userPackage, err := GetUserPackage(conf.PackageName, &conf)
+	userPackage, err := GetUserPackage(restConf.PackageName, &restConf)
 
 	testutil.AssertNotNil(userPackage, t, "userPackage")
 	testutil.AssertEquals(123456, userPackage.Id, t, "package id")
@@ -137,7 +137,7 @@ func TestGetUserPackageWithError(t *testing.T) {
 		return nil, errors.New("SomeTestError")
 	})
 
-	userPackage, err := GetUserPackage(conf.PackageName, &conf)
+	userPackage, err := GetUserPackage(restConf.PackageName, &restConf)
 
 	testutil.AssertNil(userPackage, t, "userPackage")
 	testutil.AssertNotNil(err, t, "err")
@@ -151,7 +151,7 @@ func TestGetUserPackageWithErrorHttpStatus(t *testing.T) {
 		return res, nil
 	})
 
-	userPackage, err := GetUserPackage(conf.PackageName, &conf)
+	userPackage, err := GetUserPackage(restConf.PackageName, &restConf)
 
 	testutil.AssertNil(userPackage, t, "userPackage")
 	testutil.AssertNotNil(err, t, "err")
@@ -164,7 +164,7 @@ func TestGetUserPackageWithBodyIoError(t *testing.T) {
 		return res, nil
 	})
 
-	userPackage, err := GetUserPackage(conf.PackageName, &conf)
+	userPackage, err := GetUserPackage(restConf.PackageName, &restConf)
 
 	testutil.AssertNil(userPackage, t, "userPackage")
 	testutil.AssertNotNil(err, t, "err")
@@ -178,7 +178,7 @@ func TestGetUserPackageWithInvalidJsonError(t *testing.T) {
 		return res, nil
 	})
 
-	userPackage, err := GetUserPackages(&conf)
+	userPackage, err := GetUserPackages(&restConf)
 
 	testutil.AssertNil(userPackage, t, "userPackage")
 	testutil.AssertNotNil(err, t, "err")
@@ -191,7 +191,7 @@ func TestGetUserPackagesArraySuccessful(t *testing.T) {
 		return createDefaultPackagesArrayResponse(), nil
 	})
 
-	userPackages, err := GetUserPackages(&conf)
+	userPackages, err := GetUserPackages(&restConf)
 
 	testutil.AssertNotNil(userPackages, t, "userPackages")
 
@@ -206,7 +206,7 @@ func TestGetUserPackagesArrayWithError(t *testing.T) {
 		return nil, errors.New("SomeTestError")
 	})
 
-	userPackages, err := GetUserPackages(&conf)
+	userPackages, err := GetUserPackages(&restConf)
 
 	testutil.AssertNil(userPackages, t, "userPackages")
 	testutil.AssertNotNil(err, t, "err")
@@ -220,7 +220,7 @@ func TestGetUserPackagesArrayWithErrorHttpStatus(t *testing.T) {
 		return res, nil
 	})
 
-	userPackages, err := GetUserPackages(&conf)
+	userPackages, err := GetUserPackages(&restConf)
 
 	testutil.AssertNil(userPackages, t, "userPackages")
 	testutil.AssertNotNil(err, t, "err")
@@ -233,7 +233,7 @@ func TestGetUserPackagesArrayWithBodyIoError(t *testing.T) {
 		return res, nil
 	})
 
-	userPackages, err := GetUserPackages(&conf)
+	userPackages, err := GetUserPackages(&restConf)
 
 	testutil.AssertNil(userPackages, t, "userPackages")
 	testutil.AssertNotNil(err, t, "err")
@@ -247,7 +247,7 @@ func TestGetUserPackagesArrayWithInvalidJsonError(t *testing.T) {
 		return res, nil
 	})
 
-	userPackages, err := GetUserPackages(&conf)
+	userPackages, err := GetUserPackages(&restConf)
 
 	testutil.AssertNil(userPackages, t, "userPackages")
 	testutil.AssertNotNil(err, t, "err")
@@ -260,7 +260,7 @@ func TestGetGetUserPackageVersionSuccessful(t *testing.T) {
 		return createDefaultVersionResponse(), nil
 	})
 
-	version, err := GetUserPackageVersion(conf.PackageName, 123456, &conf)
+	version, err := GetUserPackageVersion(restConf.PackageName, 123456, &restConf)
 
 	testutil.AssertNotNil(version, t, "version")
 	testutil.AssertEquals(123456, version.Id, t, "package id")
@@ -273,7 +273,7 @@ func TestGetGetUserPackageVersionWithError(t *testing.T) {
 		return nil, errors.New("SomeTestError")
 	})
 
-	version, err := GetUserPackageVersion(conf.PackageName, 123456, &conf)
+	version, err := GetUserPackageVersion(restConf.PackageName, 123456, &restConf)
 
 	testutil.AssertNil(version, t, "version")
 	testutil.AssertNotNil(err, t, "err")
@@ -287,7 +287,7 @@ func TestGetGetUserPackageVersionWithErrorHttpStatus(t *testing.T) {
 		return res, nil
 	})
 
-	version, err := GetUserPackageVersion(conf.PackageName, 123456, &conf)
+	version, err := GetUserPackageVersion(restConf.PackageName, 123456, &restConf)
 
 	testutil.AssertNil(version, t, "version")
 	testutil.AssertNotNil(err, t, "err")
@@ -300,7 +300,7 @@ func TestGetGetUserPackageVersionWithBodyIoError(t *testing.T) {
 		return res, nil
 	})
 
-	version, err := GetUserPackageVersion(conf.PackageName, 123456, &conf)
+	version, err := GetUserPackageVersion(restConf.PackageName, 123456, &restConf)
 
 	testutil.AssertNil(version, t, "version")
 	testutil.AssertNotNil(err, t, "err")
@@ -314,7 +314,7 @@ func TestGetGetUserPackageVersionWithInvalidJsonError(t *testing.T) {
 		return res, nil
 	})
 
-	version, err := GetUserPackageVersion(conf.PackageName, 123456, &conf)
+	version, err := GetUserPackageVersion(restConf.PackageName, 123456, &restConf)
 
 	testutil.AssertNil(version, t, "version")
 	testutil.AssertNotNil(err, t, "err")
@@ -327,7 +327,7 @@ func TestGetGetUserPackageVersionsArraySuccessful(t *testing.T) {
 		return createDefaultVersionsArrayResponse(), nil
 	})
 
-	versions, err := GetUserPackageVersions(conf.PackageName, &conf)
+	versions, err := GetUserPackageVersions(restConf.PackageName, &restConf)
 
 	testutil.AssertNotNil(versions, t, "versions")
 	testutil.AssertEquals(1, len(*versions), t, "package id")
@@ -341,7 +341,7 @@ func TestGetGetUserPackageVersionsArrayWithError(t *testing.T) {
 		return nil, errors.New("SomeTestError")
 	})
 
-	versions, err := GetUserPackageVersions(conf.PackageName, &conf)
+	versions, err := GetUserPackageVersions(restConf.PackageName, &restConf)
 
 	testutil.AssertNil(versions, t, "versions")
 	testutil.AssertNotNil(err, t, "err")
@@ -355,7 +355,7 @@ func TestGetGetUserPackageVersionsArrayWithErrorHttpStatus(t *testing.T) {
 		return res, nil
 	})
 
-	versions, err := GetUserPackageVersions(conf.PackageName, &conf)
+	versions, err := GetUserPackageVersions(restConf.PackageName, &restConf)
 
 	testutil.AssertNil(versions, t, "versions")
 	testutil.AssertNotNil(err, t, "err")
@@ -368,7 +368,7 @@ func TestGetGetUserPackageVersionsArrayWithBodyIoError(t *testing.T) {
 		return res, nil
 	})
 
-	versions, err := GetUserPackageVersions(conf.PackageName, &conf)
+	versions, err := GetUserPackageVersions(restConf.PackageName, &restConf)
 
 	testutil.AssertNil(versions, t, "versions")
 	testutil.AssertNotNil(err, t, "err")
@@ -382,7 +382,7 @@ func TestGetGetUserPackageVersionsArrayWithInvalidJsonError(t *testing.T) {
 		return res, nil
 	})
 
-	versions, err := GetUserPackageVersions(conf.PackageName, &conf)
+	versions, err := GetUserPackageVersions(restConf.PackageName, &restConf)
 
 	testutil.AssertNil(versions, t, "versions")
 	testutil.AssertNotNil(err, t, "err")
@@ -397,7 +397,7 @@ func TestDeleteUserPackageSuccessful(t *testing.T) {
 		return res, nil
 	})
 
-	err := DeleteUserPackage(conf.PackageName, &conf)
+	err := DeleteUserPackage(restConf.PackageName, &restConf)
 
 	testutil.AssertNil(err, t, "err")
 }
@@ -407,7 +407,7 @@ func TestDeleteUserPackageWithError(t *testing.T) {
 		return nil, errors.New("SomeTestError")
 	})
 
-	err := DeleteUserPackage(conf.PackageName, &conf)
+	err := DeleteUserPackage(restConf.PackageName, &restConf)
 
 	testutil.AssertNotNil(err, t, "err")
 	testutil.AssertEquals("SomeTestError", err.Error(), t, "error message")
@@ -420,7 +420,7 @@ func TestDeleteUserPackageWithErrorHttpStatus(t *testing.T) {
 		return res, nil
 	})
 
-	err := DeleteUserPackage(conf.PackageName, &conf)
+	err := DeleteUserPackage(restConf.PackageName, &restConf)
 
 	testutil.AssertNotNil(err, t, "err")
 	testutil.AssertEquals("an error status code occured: 400 - Bad Request", err.Error(), t, "error message")
@@ -434,7 +434,7 @@ func TestDeleteUserPackageVersionSuccessful(t *testing.T) {
 		return res, nil
 	})
 
-	err := DeleteUserPackageVersion(conf.PackageName, 1, &conf)
+	err := DeleteUserPackageVersion(restConf.PackageName, 1, &restConf)
 
 	testutil.AssertNil(err, t, "err")
 }
@@ -444,7 +444,7 @@ func TestDeleteUserPackageVersionWithError(t *testing.T) {
 		return nil, errors.New("SomeTestError")
 	})
 
-	err := DeleteUserPackageVersion(conf.PackageName, 1, &conf)
+	err := DeleteUserPackageVersion(restConf.PackageName, 1, &restConf)
 
 	testutil.AssertNotNil(err, t, "err")
 	testutil.AssertEquals("SomeTestError", err.Error(), t, "error message")
@@ -457,7 +457,7 @@ func TestDeleteUserPackageVersionWithErrorHttpStatus(t *testing.T) {
 		return res, nil
 	})
 
-	err := DeleteUserPackageVersion(conf.PackageName, 1, &conf)
+	err := DeleteUserPackageVersion(restConf.PackageName, 1, &restConf)
 
 	testutil.AssertNotNil(err, t, "err")
 	testutil.AssertEquals("an error status code occured: 400 - Bad Request", err.Error(), t, "error message")
