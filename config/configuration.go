@@ -36,9 +36,9 @@ type Config struct {
 	PackageType string
 	// name of the package (not nil)
 	PackageName string
-	// name of a version to delete
+	// name of a version to delete. Number "x" versions to keep will be ignored
 	VersionNameToDelete string
-	// indicator whether to delete snapshots or not
+	// indicator whether to delete snapshots or not. snapshot are not assumed to ba a major, minor or patch version
 	DeleteSnapshots bool
 	// Number major versions to keep
 	NumberOfMajorVersionsToKeep int
