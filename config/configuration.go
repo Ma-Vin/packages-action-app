@@ -23,6 +23,7 @@ const (
 	ENV_NAME_NUMBER_MINOR_TO_KEEP   string = "NUMBER_MINOR_TO_KEEP"
 	ENV_NAME_NUMBER_PATCH_TO_KEEP   string = "NUMBER_PATCH_TO_KEEP"
 	ENV_NAME_GITHUB_TOKEN           string = "GITHUB_TOKEN"
+	ENV_NAME_DRY_RUN                string = "DRY_RUN"
 )
 
 // structure to hold configuration of the action
@@ -47,6 +48,8 @@ type Config struct {
 	NumberOfPatchVersionsToKeep int
 	// token which is to use to authenticate against github rest api (not nil)
 	GithubToken string
+	// Indicator wether to run application without deletion or not. Default true (No deletetion)
+	DryRun bool
 }
 
 /*
@@ -74,6 +77,7 @@ func ReadConfiguration() *Config {
 	config.NumberOfMinorVersionsToKeep = getIntEnv(ENV_NAME_NUMBER_MINOR_TO_KEEP)
 	config.NumberOfPatchVersionsToKeep = getIntEnv(ENV_NAME_NUMBER_PATCH_TO_KEEP)
 	config.GithubToken = getTrimEnv(ENV_NAME_GITHUB_TOKEN)
+	config.DryRun = getBoolEnvDefault(ENV_NAME_DRY_RUN, true)
 
 	printConfig(&config)
 
@@ -92,6 +96,15 @@ func getTrimEnv(envName string) string {
 // determines an environment variable and return it as bool
 func getBoolEnv(envName string) bool {
 	return strings.EqualFold("true", getTrimEnv(envName))
+}
+
+// determines an environment variable and return it as bool if present, other wise the given default value
+func getBoolEnvDefault(envName string, defaultValue bool) bool {
+	value := getTrimEnv(envName)
+	if value == "" {
+		return defaultValue
+	}
+	return strings.EqualFold("true", value)
 }
 
 // determines an environment variable and return it as int.
@@ -165,6 +178,7 @@ func printConfig(config *Config) {
 	} else {
 		log.Println("  GithubToken:")
 	}
+	log.Println("  DryRun:              ", config.DryRun)
 }
 
 func printPositiv(text string, value int) {
