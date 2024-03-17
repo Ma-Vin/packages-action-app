@@ -1,6 +1,7 @@
 package config
 
 import (
+	"errors"
 	"log"
 	"os"
 	"strconv"
@@ -65,7 +66,7 @@ Reads the configuration from environment variables:
   - NUMBER_PATCH_TO_KEEP
   - GITHUB_TOKEN
 */
-func ReadConfiguration() *Config {
+func ReadConfiguration() (*Config, error) {
 	var config Config
 	config.Organization = getTrimEnv(ENV_NAME_ORGANIZATION)
 	config.User = getTrimEnv(ENV_NAME_USER)
@@ -82,10 +83,9 @@ func ReadConfiguration() *Config {
 	printConfig(&config)
 
 	if isValid(&config) {
-		return &config
+		return &config, nil
 	}
-	log.Println("Invalid configuration!")
-	return nil
+	return nil, errors.New("invalid configuration")
 }
 
 // determines an environment variable and return it as trimmed string

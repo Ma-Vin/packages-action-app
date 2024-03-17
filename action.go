@@ -10,17 +10,15 @@ import (
 func main() {
 	log.Println("Start packages action")
 
-	var loadedConfig = config.ReadConfiguration()
+	_, err := config.ReadConfiguration()
 
-	if loadedConfig == nil {
-		log.Fatalln("Packages action failed")
-	}
+	checkkError(err)
 
 	log.Println("Packages action done")
 }
 
 func checkkError(err error) {
 	if err != nil {
-		log.Fatalln(err)
+		log.Fatalf("Packages action failed: %s", err)
 	}
 }

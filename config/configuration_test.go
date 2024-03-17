@@ -31,8 +31,10 @@ func TestReadConfigurationUserAndOrganization(t *testing.T) {
 	os.Setenv(ENV_NAME_DELETE_SNAPSHOTS, "TRUE")
 	os.Setenv(ENV_NAME_GITHUB_TOKEN, "abcdef123")
 
-	conf := ReadConfiguration()
+	conf, err := ReadConfiguration()
 
+	testutil.AssertNotNil(err, t, "err")
+	testutil.AssertEquals("invalid configuration", err.Error(), t, "error message")
 	testutil.AssertNil(conf, t, "conf")
 }
 
@@ -44,8 +46,10 @@ func TestReadConfigurationMissingUserAndOrganization(t *testing.T) {
 	os.Setenv(ENV_NAME_DELETE_SNAPSHOTS, "TRUE")
 	os.Setenv(ENV_NAME_GITHUB_TOKEN, "abcdef123")
 
-	conf := ReadConfiguration()
+	conf, err := ReadConfiguration()
 
+	testutil.AssertNotNil(err, t, "err")
+	testutil.AssertEquals("invalid configuration", err.Error(), t, "error message")
 	testutil.AssertNil(conf, t, "conf")
 }
 
@@ -58,8 +62,9 @@ func TestReadConfigurationUser(t *testing.T) {
 	os.Setenv(ENV_NAME_DELETE_SNAPSHOTS, "TRUE")
 	os.Setenv(ENV_NAME_GITHUB_TOKEN, "abcdef123")
 
-	conf := ReadConfiguration()
+	conf, err := ReadConfiguration()
 
+	testutil.AssertNil(err, t, "err")
 	testutil.AssertNotNil(conf, t, "conf")
 	testutil.AssertEquals("", conf.Organization, t, "organization")
 	testutil.AssertEquals("Ma-Vin", conf.User, t, "user")
@@ -83,8 +88,9 @@ func TestReadConfigurationOrganization(t *testing.T) {
 	os.Setenv(ENV_NAME_DELETE_SNAPSHOTS, "TRUE")
 	os.Setenv(ENV_NAME_GITHUB_TOKEN, "abcdef123")
 
-	conf := ReadConfiguration()
+	conf, err := ReadConfiguration()
 
+	testutil.AssertNil(err, t, "err")
 	testutil.AssertNotNil(conf, t, "conf")
 	testutil.AssertEquals("Ma-Vin-Org", conf.Organization, t, "organization")
 	testutil.AssertEquals("", conf.User, t, "user")
@@ -108,8 +114,10 @@ func TestReadConfigurationUnkownPackageType(t *testing.T) {
 	os.Setenv(ENV_NAME_DELETE_SNAPSHOTS, "TRUE")
 	os.Setenv(ENV_NAME_GITHUB_TOKEN, "abcdef123")
 
-	conf := ReadConfiguration()
+	conf, err := ReadConfiguration()
 
+	testutil.AssertNotNil(err, t, "err")
+	testutil.AssertEquals("invalid configuration", err.Error(), t, "error message")
 	testutil.AssertNil(conf, t, "conf")
 }
 
@@ -121,8 +129,10 @@ func TestReadConfigurationMissingPackageName(t *testing.T) {
 	os.Setenv(ENV_NAME_DELETE_SNAPSHOTS, "TRUE")
 	os.Setenv(ENV_NAME_GITHUB_TOKEN, "abcdef123")
 
-	conf := ReadConfiguration()
+	conf, err := ReadConfiguration()
 
+	testutil.AssertNotNil(err, t, "err")
+	testutil.AssertEquals("invalid configuration", err.Error(), t, "error message")
 	testutil.AssertNil(conf, t, "conf")
 }
 func TestReadConfigurationMissingToken(t *testing.T) {
@@ -133,8 +143,10 @@ func TestReadConfigurationMissingToken(t *testing.T) {
 	os.Setenv(ENV_NAME_PACKAGE_NAME, "packages-action-app")
 	os.Setenv(ENV_NAME_DELETE_SNAPSHOTS, "TRUE")
 
-	conf := ReadConfiguration()
+	conf, err := ReadConfiguration()
 
+	testutil.AssertNotNil(err, t, "err")
+	testutil.AssertEquals("invalid configuration", err.Error(), t, "error message")
 	testutil.AssertNil(conf, t, "conf")
 }
 
@@ -146,8 +158,10 @@ func TestReadConfigurationNothingToDelete(t *testing.T) {
 	os.Setenv(ENV_NAME_PACKAGE_NAME, "packages-action-app")
 	os.Setenv(ENV_NAME_GITHUB_TOKEN, "abcdef123")
 
-	conf := ReadConfiguration()
+	conf, err := ReadConfiguration()
 
+	testutil.AssertNotNil(err, t, "err")
+	testutil.AssertEquals("invalid configuration", err.Error(), t, "error message")
 	testutil.AssertNil(conf, t, "conf")
 }
 
@@ -160,8 +174,10 @@ func TestReadConfigurationDeleteSNaphostNegative(t *testing.T) {
 	os.Setenv(ENV_NAME_DELETE_SNAPSHOTS, "FALSE")
 	os.Setenv(ENV_NAME_GITHUB_TOKEN, "abcdef123")
 
-	conf := ReadConfiguration()
+	conf, err := ReadConfiguration()
 
+	testutil.AssertNotNil(err, t, "err")
+	testutil.AssertEquals("invalid configuration", err.Error(), t, "error message")
 	testutil.AssertNil(conf, t, "conf")
 }
 
@@ -179,8 +195,9 @@ func TestReadConfigurationUserAllSet(t *testing.T) {
 	os.Setenv(ENV_NAME_GITHUB_TOKEN, "abcdef123")
 	os.Setenv(ENV_NAME_DRY_RUN, "false")
 
-	conf := ReadConfiguration()
+	conf, err := ReadConfiguration()
 
+	testutil.AssertNil(err, t, "err")
 	testutil.AssertNotNil(conf, t, "conf")
 	testutil.AssertEquals("", conf.Organization, t, "organization")
 	testutil.AssertEquals("Ma-Vin", conf.User, t, "user")
@@ -208,8 +225,9 @@ func TestReadConfigurationInvalidInt(t *testing.T) {
 	os.Setenv(ENV_NAME_NUMBER_PATCH_TO_KEEP, "1")
 	os.Setenv(ENV_NAME_GITHUB_TOKEN, "abcdef123")
 
-	conf := ReadConfiguration()
+	conf, err := ReadConfiguration()
 
+	testutil.AssertNil(err, t, "err")
 	testutil.AssertNotNil(conf, t, "conf")
 	testutil.AssertEquals("", conf.Organization, t, "organization")
 	testutil.AssertEquals("Ma-Vin", conf.User, t, "user")
