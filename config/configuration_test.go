@@ -8,6 +8,7 @@ import (
 )
 
 func unsetEnv() {
+	os.Unsetenv(ENV_NAME_GITHUB_REST_API_URL)
 	os.Unsetenv(ENV_NAME_ORGANIZATION)
 	os.Unsetenv(ENV_NAME_USER)
 	os.Unsetenv(ENV_NAME_PACKAGE_TYPE)
@@ -66,6 +67,7 @@ func TestReadConfigurationUser(t *testing.T) {
 
 	testutil.AssertNil(err, t, "err")
 	testutil.AssertNotNil(conf, t, "conf")
+	testutil.AssertEquals("https://api.github.com", conf.GitHubRestUrl, t, "GitHub rest url")
 	testutil.AssertEquals("", conf.Organization, t, "organization")
 	testutil.AssertEquals("Ma-Vin", conf.User, t, "user")
 	testutil.AssertEquals("maven", conf.PackageType, t, "package type")
@@ -92,6 +94,7 @@ func TestReadConfigurationOrganization(t *testing.T) {
 
 	testutil.AssertNil(err, t, "err")
 	testutil.AssertNotNil(conf, t, "conf")
+	testutil.AssertEquals("https://api.github.com", conf.GitHubRestUrl, t, "GitHub rest url")
 	testutil.AssertEquals("Ma-Vin-Org", conf.Organization, t, "organization")
 	testutil.AssertEquals("", conf.User, t, "user")
 	testutil.AssertEquals("maven", conf.PackageType, t, "package type")
@@ -199,6 +202,7 @@ func TestReadConfigurationUserAllSet(t *testing.T) {
 
 	testutil.AssertNil(err, t, "err")
 	testutil.AssertNotNil(conf, t, "conf")
+	testutil.AssertEquals("https://api.github.com", conf.GitHubRestUrl, t, "GitHub rest url")
 	testutil.AssertEquals("", conf.Organization, t, "organization")
 	testutil.AssertEquals("Ma-Vin", conf.User, t, "user")
 	testutil.AssertEquals("maven", conf.PackageType, t, "package type")
@@ -229,6 +233,7 @@ func TestReadConfigurationInvalidInt(t *testing.T) {
 
 	testutil.AssertNil(err, t, "err")
 	testutil.AssertNotNil(conf, t, "conf")
+	testutil.AssertEquals("https://api.github.com", conf.GitHubRestUrl, t, "GitHub rest url")
 	testutil.AssertEquals("", conf.Organization, t, "organization")
 	testutil.AssertEquals("Ma-Vin", conf.User, t, "user")
 	testutil.AssertEquals("maven", conf.PackageType, t, "package type")
@@ -238,6 +243,34 @@ func TestReadConfigurationInvalidInt(t *testing.T) {
 	testutil.AssertEquals(-1, conf.NumberOfMajorVersionsToKeep, t, "number of major versions")
 	testutil.AssertEquals(-1, conf.NumberOfMinorVersionsToKeep, t, "number of minor versions")
 	testutil.AssertEquals(1, conf.NumberOfPatchVersionsToKeep, t, "number of patch versions")
+	testutil.AssertEquals("abcdef123", conf.GithubToken, t, "github token")
+	testutil.AssertEquals(true, conf.DryRun, t, "dry run")
+}
+
+func TestReadConfigurationWithGitHubUrl(t *testing.T) {
+	unsetEnv()
+
+	os.Setenv(ENV_NAME_GITHUB_REST_API_URL, "https://github.com/ma-vin")
+	os.Setenv(ENV_NAME_USER, "Ma-Vin")
+	os.Setenv(ENV_NAME_PACKAGE_TYPE, MAVEN)
+	os.Setenv(ENV_NAME_PACKAGE_NAME, "packages-action-app")
+	os.Setenv(ENV_NAME_DELETE_SNAPSHOTS, "TRUE")
+	os.Setenv(ENV_NAME_GITHUB_TOKEN, "abcdef123")
+
+	conf, err := ReadConfiguration()
+
+	testutil.AssertNil(err, t, "err")
+	testutil.AssertNotNil(conf, t, "conf")
+	testutil.AssertEquals("https://github.com/ma-vin", conf.GitHubRestUrl, t, "GitHub rest url")
+	testutil.AssertEquals("", conf.Organization, t, "organization")
+	testutil.AssertEquals("Ma-Vin", conf.User, t, "user")
+	testutil.AssertEquals("maven", conf.PackageType, t, "package type")
+	testutil.AssertEquals("packages-action-app", conf.PackageName, t, "package name")
+	testutil.AssertEquals("", conf.VersionNameToDelete, t, "version name to delete")
+	testutil.AssertEquals(true, conf.DeleteSnapshots, t, "delete snapshots")
+	testutil.AssertEquals(-1, conf.NumberOfMajorVersionsToKeep, t, "number of major versions")
+	testutil.AssertEquals(-1, conf.NumberOfMinorVersionsToKeep, t, "number of minor versions")
+	testutil.AssertEquals(-1, conf.NumberOfPatchVersionsToKeep, t, "number of patch versions")
 	testutil.AssertEquals("abcdef123", conf.GithubToken, t, "github token")
 	testutil.AssertEquals(true, conf.DryRun, t, "dry run")
 }

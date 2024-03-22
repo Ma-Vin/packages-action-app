@@ -53,7 +53,7 @@ const versionJsonResponse = `{
 	}
   }`
 
-var restConf = config.Config{User: "DummyUser", PackageType: "maven", PackageName: "DummyPackage"}
+var restConf = config.Config{GitHubRestUrl: "https://api.github.com", User: "DummyUser", PackageType: "maven", PackageName: "DummyPackage"}
 
 type mockCloser struct {
 	mockIoErrorReader

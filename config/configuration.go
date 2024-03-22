@@ -14,6 +14,7 @@ const (
 	// package type for a not supported or unknown type
 	UNKNOWN string = "unkown"
 
+	ENV_NAME_GITHUB_REST_API_URL    string = "GITHUB_REST_API_URL"
 	ENV_NAME_ORGANIZATION           string = "ORGANIZATION"
 	ENV_NAME_USER                   string = "USER"
 	ENV_NAME_PACKAGE_TYPE           string = "PACKAGE_TYPE"
@@ -25,10 +26,14 @@ const (
 	ENV_NAME_NUMBER_PATCH_TO_KEEP   string = "NUMBER_PATCH_TO_KEEP"
 	ENV_NAME_GITHUB_TOKEN           string = "GITHUB_TOKEN"
 	ENV_NAME_DRY_RUN                string = "DRY_RUN"
+
+	gitHubUrl string = "https://api.github.com"
 )
 
 // structure to hold configuration of the action
 type Config struct {
+	// Url to access GitHubs Rest api.
+	GitHubRestUrl string
 	// organization whose packages are to handle (Either this or user has to be set)
 	Organization string
 	// user whose packages are to handle  (Either this or organization has to be set)
@@ -68,6 +73,7 @@ Reads the configuration from environment variables:
 */
 func ReadConfiguration() (*Config, error) {
 	var config Config
+	config.GitHubRestUrl = getTrimEnvOrDefault(ENV_NAME_GITHUB_REST_API_URL, gitHubUrl)
 	config.Organization = getTrimEnv(ENV_NAME_ORGANIZATION)
 	config.User = getTrimEnv(ENV_NAME_USER)
 	config.PackageType = mapToPackageType(getTrimEnv(ENV_NAME_PACKAGE_TYPE))
@@ -86,6 +92,15 @@ func ReadConfiguration() (*Config, error) {
 		return &config, nil
 	}
 	return nil, errors.New("invalid configuration")
+}
+
+// determines an environment variable and return it as trimmed string. If empty the default value will be returned
+func getTrimEnvOrDefault(envName string, defaultValue string) string {
+	result := getTrimEnv(envName)
+	if result != "" {
+		return result
+	}
+	return defaultValue
 }
 
 // determines an environment variable and return it as trimmed string
@@ -164,6 +179,7 @@ func isValid(config *Config) bool {
 // prints a given configuration to the standard output
 func printConfig(config *Config) {
 	log.Println("Read configuration", config.Organization)
+	log.Println("  GitHubRestUrl:       ", config.GitHubRestUrl)
 	log.Println("  Organization:        ", config.Organization)
 	log.Println("  User:                ", config.User)
 	log.Println("  PackageType:         ", config.PackageType)
