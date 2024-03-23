@@ -217,7 +217,10 @@ func concatUrl(urlParts ...string) string {
 // checks if the response has a failure status code and creates in this case an error
 func checkResponseStatusCode(response *http.Response) error {
 	if response.StatusCode >= 400 {
-		return fmt.Errorf("an error status code occured at %s '%s': %d - %s", response.Request.Method, response.Request.URL, response.StatusCode, http.StatusText(response.StatusCode))
+		if response.Request != nil {
+			return fmt.Errorf("an error status code occured at %s '%s': %d - %s", response.Request.Method, response.Request.URL, response.StatusCode, http.StatusText(response.StatusCode))
+		}
+		return fmt.Errorf("an error status code occured: %d - %s", response.StatusCode, http.StatusText(response.StatusCode))
 	}
 	return nil
 }
