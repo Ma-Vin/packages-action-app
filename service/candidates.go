@@ -26,12 +26,24 @@ type Candidate struct {
 type GitHubGetVersionsRestExecutor func(config *config.Config) (*[]github_model.Version, error)
 type GitHubGetPackageRestExecutor func(config *config.Config) (*github_model.UserPackage, error)
 
-var VersionsGetExecutor GitHubGetVersionsRestExecutor = func(config *config.Config) (*[]github_model.Version, error) {
-	return GetUserPackageVersions(config.PackageName, config)
+var VersionsGetExecutor GitHubGetVersionsRestExecutor = initVersionsGetExecutor()
+var PackageGetExecutor GitHubGetPackageRestExecutor = initPackageGetExecutor()
+
+func initVersionsGetExecutor() GitHubGetVersionsRestExecutor {
+	return func(config *config.Config) (*[]github_model.Version, error) {
+		return GetUserPackageVersions(config.PackageName, config)
+	}
 }
 
-var PackageGetExecutor GitHubGetPackageRestExecutor = func(config *config.Config) (*github_model.UserPackage, error) {
-	return GetUserPackage(config.PackageName, config)
+func initPackageGetExecutor() GitHubGetPackageRestExecutor {
+	return func(config *config.Config) (*github_model.UserPackage, error) {
+		return GetUserPackage(config.PackageName, config)
+	}
+}
+
+func InitAllCandidates() {
+	VersionsGetExecutor = initVersionsGetExecutor()
+	PackageGetExecutor = initPackageGetExecutor()
 }
 
 // Determine all candidates to delete. A candidate can be either a version or a package

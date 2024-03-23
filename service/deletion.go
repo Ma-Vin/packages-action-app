@@ -13,16 +13,32 @@ type DetermineCandidatesExecutor func(config *config.Config) (*[]Candidate, erro
 type GitHubDeleteVersionRestExecutor func(packageName string, versionId int, config *config.Config) error
 type GitHubDeletePackageRestExecutor func(packageName string, config *config.Config) error
 
-var CandidatesExecutor DetermineCandidatesExecutor = func(config *config.Config) (*[]Candidate, error) {
-	return DetermineCandidates(config)
+var CandidatesExecutor DetermineCandidatesExecutor = initCandidatesExecutor()
+var DeleteVersionExecutor GitHubDeleteVersionRestExecutor = initDeleteVersionExecutor()
+var DeletePackageExecutor GitHubDeletePackageRestExecutor = initDeletePackageExecutor()
+
+func initCandidatesExecutor() DetermineCandidatesExecutor {
+	return func(config *config.Config) (*[]Candidate, error) {
+		return DetermineCandidates(config)
+	}
 }
 
-var DeleteVersionExecutor GitHubDeleteVersionRestExecutor = func(packageName string, versionId int, config *config.Config) error {
-	return DeleteUserPackageVersion(packageName, versionId, config)
+func initDeleteVersionExecutor() GitHubDeleteVersionRestExecutor {
+	return func(packageName string, versionId int, config *config.Config) error {
+		return DeleteUserPackageVersion(packageName, versionId, config)
+	}
 }
 
-var DeletePackageExecutor GitHubDeletePackageRestExecutor = func(packageName string, config *config.Config) error {
-	return DeleteUserPackage(packageName, config)
+func initDeletePackageExecutor() GitHubDeletePackageRestExecutor {
+	return func(packageName string, config *config.Config) error {
+		return DeleteUserPackage(packageName, config)
+	}
+}
+
+func InitAllDeletion() {
+	CandidatesExecutor = initCandidatesExecutor()
+	DeleteVersionExecutor = initDeleteVersionExecutor()
+	DeletePackageExecutor = initDeletePackageExecutor()
 }
 
 // Deletes versions from Github with concurrency

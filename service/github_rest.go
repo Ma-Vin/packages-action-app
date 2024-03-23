@@ -27,12 +27,16 @@ type queryParameter struct {
 
 type ClientExecutor func(*http.Client, *http.Request) (*http.Response, error)
 
-func SetClientExecutor(executor ClientExecutor) {
-	clientExecutor = executor
+var ClientRestExecutor ClientExecutor = initClientExector()
+
+func initClientExector() ClientExecutor {
+	return func(c *http.Client, req *http.Request) (*http.Response, error) {
+		return c.Do(req)
+	}
 }
 
-var clientExecutor ClientExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
-	return c.Do(req)
+func InitAllGitHubRest() {
+	ClientRestExecutor = initClientExector()
 }
 
 // calls GitHub rest api to get all packages of a certain type and user.
@@ -180,7 +184,7 @@ func executeRequestWithoutBody(operation string, url string, configuration *conf
 	addHeader(req, configuration)
 	addUrlQueryParameters(req, &parameters)
 
-	return clientExecutor(&c, req)
+	return ClientRestExecutor(&c, req)
 }
 
 // adds the default header elements for a call against GitHub rest api

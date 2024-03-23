@@ -10,6 +10,7 @@ import (
 // Main funtion to execute the actions process
 func main() {
 	log.Println("Start packages action")
+	initAll()
 
 	var loadedConfig, err = config.ReadConfiguration()
 
@@ -25,4 +26,10 @@ func checkError(err error) {
 	if err != nil {
 		log.Fatalf("Packages action failed: %s", err)
 	}
+}
+
+func initAll() {
+	service.InitAllCandidates()
+	service.InitAllDeletion()
+	service.InitAllGitHubRest()
 }

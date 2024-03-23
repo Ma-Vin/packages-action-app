@@ -119,10 +119,10 @@ func checkRequest(req *http.Request, url string, method string, t *testing.T) {
 }
 
 func TestGetUserPackageSuccessful(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		checkGetRequest(req, "https://api.github.com/users/DummyUser/packages/maven/DummyPackage", t)
 		return createDefaultPackageResponse(), nil
-	})
+	}
 
 	userPackage, err := GetUserPackage(restConf.PackageName, &restConf)
 
@@ -133,9 +133,9 @@ func TestGetUserPackageSuccessful(t *testing.T) {
 }
 
 func TestGetUserPackageWithError(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		return nil, errors.New("SomeTestError")
-	})
+	}
 
 	userPackage, err := GetUserPackage(restConf.PackageName, &restConf)
 
@@ -145,11 +145,11 @@ func TestGetUserPackageWithError(t *testing.T) {
 }
 
 func TestGetUserPackageWithErrorHttpStatus(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		res := createDefaultPackageResponse()
 		res.StatusCode = 400
 		return res, nil
-	})
+	}
 
 	userPackage, err := GetUserPackage(restConf.PackageName, &restConf)
 
@@ -159,10 +159,10 @@ func TestGetUserPackageWithErrorHttpStatus(t *testing.T) {
 }
 
 func TestGetUserPackageWithBodyIoError(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		res := createResponseWithIoError(200)
 		return res, nil
-	})
+	}
 
 	userPackage, err := GetUserPackage(restConf.PackageName, &restConf)
 
@@ -172,11 +172,11 @@ func TestGetUserPackageWithBodyIoError(t *testing.T) {
 }
 
 func TestGetUserPackageWithInvalidJsonError(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		var body = ""
 		res := createResponse(&body, 200)
 		return res, nil
-	})
+	}
 
 	userPackage, err := GetUserPackages(&restConf)
 
@@ -186,10 +186,10 @@ func TestGetUserPackageWithInvalidJsonError(t *testing.T) {
 }
 
 func TestGetUserPackagesArraySuccessful(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		checkGetRequest(req, "https://api.github.com/users/DummyUser/packages?package_type=maven", t)
 		return createDefaultPackagesArrayResponse(), nil
-	})
+	}
 
 	userPackages, err := GetUserPackages(&restConf)
 
@@ -202,9 +202,9 @@ func TestGetUserPackagesArraySuccessful(t *testing.T) {
 }
 
 func TestGetUserPackagesArrayWithError(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		return nil, errors.New("SomeTestError")
-	})
+	}
 
 	userPackages, err := GetUserPackages(&restConf)
 
@@ -214,11 +214,11 @@ func TestGetUserPackagesArrayWithError(t *testing.T) {
 }
 
 func TestGetUserPackagesArrayWithErrorHttpStatus(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		res := createDefaultPackagesArrayResponse()
 		res.StatusCode = 400
 		return res, nil
-	})
+	}
 
 	userPackages, err := GetUserPackages(&restConf)
 
@@ -228,10 +228,10 @@ func TestGetUserPackagesArrayWithErrorHttpStatus(t *testing.T) {
 }
 
 func TestGetUserPackagesArrayWithBodyIoError(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		res := createResponseWithIoError(200)
 		return res, nil
-	})
+	}
 
 	userPackages, err := GetUserPackages(&restConf)
 
@@ -241,11 +241,11 @@ func TestGetUserPackagesArrayWithBodyIoError(t *testing.T) {
 }
 
 func TestGetUserPackagesArrayWithInvalidJsonError(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		var body = ""
 		res := createResponse(&body, 200)
 		return res, nil
-	})
+	}
 
 	userPackages, err := GetUserPackages(&restConf)
 
@@ -255,10 +255,10 @@ func TestGetUserPackagesArrayWithInvalidJsonError(t *testing.T) {
 }
 
 func TestGetGetUserPackageVersionSuccessful(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		checkGetRequest(req, "https://api.github.com/users/DummyUser/packages/maven/DummyPackage/versions/123456", t)
 		return createDefaultVersionResponse(), nil
-	})
+	}
 
 	version, err := GetUserPackageVersion(restConf.PackageName, 123456, &restConf)
 
@@ -269,9 +269,9 @@ func TestGetGetUserPackageVersionSuccessful(t *testing.T) {
 }
 
 func TestGetGetUserPackageVersionWithError(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		return nil, errors.New("SomeTestError")
-	})
+	}
 
 	version, err := GetUserPackageVersion(restConf.PackageName, 123456, &restConf)
 
@@ -281,11 +281,11 @@ func TestGetGetUserPackageVersionWithError(t *testing.T) {
 }
 
 func TestGetGetUserPackageVersionWithErrorHttpStatus(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		res := createDefaultVersionResponse()
 		res.StatusCode = 400
 		return res, nil
-	})
+	}
 
 	version, err := GetUserPackageVersion(restConf.PackageName, 123456, &restConf)
 
@@ -295,10 +295,10 @@ func TestGetGetUserPackageVersionWithErrorHttpStatus(t *testing.T) {
 }
 
 func TestGetGetUserPackageVersionWithBodyIoError(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		res := createResponseWithIoError(200)
 		return res, nil
-	})
+	}
 
 	version, err := GetUserPackageVersion(restConf.PackageName, 123456, &restConf)
 
@@ -308,11 +308,11 @@ func TestGetGetUserPackageVersionWithBodyIoError(t *testing.T) {
 }
 
 func TestGetGetUserPackageVersionWithInvalidJsonError(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		var body = ""
 		res := createResponse(&body, 200)
 		return res, nil
-	})
+	}
 
 	version, err := GetUserPackageVersion(restConf.PackageName, 123456, &restConf)
 
@@ -322,10 +322,10 @@ func TestGetGetUserPackageVersionWithInvalidJsonError(t *testing.T) {
 }
 
 func TestGetGetUserPackageVersionsArraySuccessful(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		checkGetRequest(req, "https://api.github.com/users/DummyUser/packages/maven/DummyPackage/versions", t)
 		return createDefaultVersionsArrayResponse(), nil
-	})
+	}
 
 	versions, err := GetUserPackageVersions(restConf.PackageName, &restConf)
 
@@ -337,9 +337,9 @@ func TestGetGetUserPackageVersionsArraySuccessful(t *testing.T) {
 }
 
 func TestGetGetUserPackageVersionsArrayWithError(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		return nil, errors.New("SomeTestError")
-	})
+	}
 
 	versions, err := GetUserPackageVersions(restConf.PackageName, &restConf)
 
@@ -349,11 +349,11 @@ func TestGetGetUserPackageVersionsArrayWithError(t *testing.T) {
 }
 
 func TestGetGetUserPackageVersionsArrayWithErrorHttpStatus(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		res := createDefaultVersionsArrayResponse()
 		res.StatusCode = 400
 		return res, nil
-	})
+	}
 
 	versions, err := GetUserPackageVersions(restConf.PackageName, &restConf)
 
@@ -363,10 +363,10 @@ func TestGetGetUserPackageVersionsArrayWithErrorHttpStatus(t *testing.T) {
 }
 
 func TestGetGetUserPackageVersionsArrayWithBodyIoError(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		res := createResponseWithIoError(200)
 		return res, nil
-	})
+	}
 
 	versions, err := GetUserPackageVersions(restConf.PackageName, &restConf)
 
@@ -376,11 +376,11 @@ func TestGetGetUserPackageVersionsArrayWithBodyIoError(t *testing.T) {
 }
 
 func TestGetGetUserPackageVersionsArrayWithInvalidJsonError(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		var body = ""
 		res := createResponse(&body, 200)
 		return res, nil
-	})
+	}
 
 	versions, err := GetUserPackageVersions(restConf.PackageName, &restConf)
 
@@ -390,12 +390,12 @@ func TestGetGetUserPackageVersionsArrayWithInvalidJsonError(t *testing.T) {
 }
 
 func TestDeleteUserPackageSuccessful(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		checkDeleteRequest(req, "https://api.github.com/users/DummyUser/packages/maven/DummyPackage", t)
 		var body = ""
 		res := createResponse(&body, 200)
 		return res, nil
-	})
+	}
 
 	err := DeleteUserPackage(restConf.PackageName, &restConf)
 
@@ -403,9 +403,9 @@ func TestDeleteUserPackageSuccessful(t *testing.T) {
 }
 
 func TestDeleteUserPackageWithError(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		return nil, errors.New("SomeTestError")
-	})
+	}
 
 	err := DeleteUserPackage(restConf.PackageName, &restConf)
 
@@ -414,11 +414,11 @@ func TestDeleteUserPackageWithError(t *testing.T) {
 }
 
 func TestDeleteUserPackageWithErrorHttpStatus(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		var body = ""
 		res := createResponse(&body, 400)
 		return res, nil
-	})
+	}
 
 	err := DeleteUserPackage(restConf.PackageName, &restConf)
 
@@ -427,12 +427,12 @@ func TestDeleteUserPackageWithErrorHttpStatus(t *testing.T) {
 }
 
 func TestDeleteUserPackageVersionSuccessful(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		checkDeleteRequest(req, "https://api.github.com/users/DummyUser/packages/maven/DummyPackage/versions/1", t)
 		var body = ""
 		res := createResponse(&body, 200)
 		return res, nil
-	})
+	}
 
 	err := DeleteUserPackageVersion(restConf.PackageName, 1, &restConf)
 
@@ -440,9 +440,9 @@ func TestDeleteUserPackageVersionSuccessful(t *testing.T) {
 }
 
 func TestDeleteUserPackageVersionWithError(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		return nil, errors.New("SomeTestError")
-	})
+	}
 
 	err := DeleteUserPackageVersion(restConf.PackageName, 1, &restConf)
 
@@ -451,11 +451,11 @@ func TestDeleteUserPackageVersionWithError(t *testing.T) {
 }
 
 func TestDeleteUserPackageVersionWithErrorHttpStatus(t *testing.T) {
-	SetClientExecutor(func(c *http.Client, req *http.Request) (*http.Response, error) {
+	ClientRestExecutor = func(c *http.Client, req *http.Request) (*http.Response, error) {
 		var body = ""
 		res := createResponse(&body, 400)
 		return res, nil
-	})
+	}
 
 	err := DeleteUserPackageVersion(restConf.PackageName, 1, &restConf)
 
