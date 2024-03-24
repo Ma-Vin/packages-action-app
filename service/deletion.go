@@ -51,6 +51,7 @@ func DeleteVersions(config *config.Config) error {
 	logCandidates(candidates)
 
 	if config.DryRun {
+		log.Println("Skip deletion because of dryRun")
 		return nil
 	}
 
