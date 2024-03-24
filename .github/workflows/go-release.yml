@@ -1,0 +1,121 @@
+
+name: Build, analyze an release
+
+on:
+    push:
+      branches: [ "releases/**" ]
+    pull_request:
+      branches: [ "releases/**" ]
+  
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check out
+      uses: actions/checkout@v4
+    - name: Set up Go
+      uses: actions/setup-go@v5
+      with:
+        go-version: '1.22'
+    - name: Build
+      run: go build -v ./...
+    - name: Test
+      run: go test -v -coverprofile='coverage.out' -json ./... > report.json
+    - name: SonarQube Scan
+      uses: sonarsource/sonarqube-scan-action@v2
+      env:
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+  release-tag:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+      - name: create release tag
+        run: |
+          VERSION_NAME=$(echo "${github.ref_name}" | grep -oP '(?<=release/).*')
+
+          RELEASE_TAG=$(
+            curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.UPLOAD_GITHUB_PAT }}" \
+            https://api.github.com/repos/${github.repository}/releases \
+            -d "{\"tag_name\":\"v${VERSION_NAME}\",\"target_commitish\":\"${github.ref_name}\",\"name\":\"v${VERSION_NAME}\",\"body\":\"Workflow base creadet release on branch ${github.ref_name}\",\"draft\":false,\"prerelease\":false,\"generate_release_notes\":false}"
+          )
+
+          RELEASE_ID=$(echo "${RELEASE_TAG}" | grep -oPm1 '(?<="id": ).*(?=,)')
+          if [ -z ${ASSET_ID} ] ; 
+          then
+            RELEASE_ID=$(echo "${RELEASE_TAG}" | grep -oPm1 '(?<="id":)\d*(?=,)' | head -n1 )
+          fi
+
+          echo "Release created with Id ${RELEASE_ID}"
+
+  release-binary-assets:
+    needs: release-tag
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: 
+        goOs: [linux, windows]
+        goArch: [amd64, arm64]
+    steps:
+      - name: Check out
+        uses: actions/checkout@v4
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+      - name: Build ${{ matrix.goOs }}-${{ matrix.goArch }}
+        run: go build -o ${FILE_NAME}
+        env:
+          GOOS: ${{ matrix.goOs }}
+          GOARCH: ${{ matrix.goArch }}
+          FILE_NAME: packages-action-${{ matrix.goOs }}-${{ matrix.goArch }}${{ matrix.goOs == 'windows' && '.exe' || '' }}
+      - name: zip app binary
+        run: zip ${ARCHIVE_NAME} ${FILE_NAME}
+        env:
+          FILE_NAME: packages-action-${{ matrix.goOs }}-${{ matrix.goArch }}${{ matrix.goOs == 'windows' && '.exe' || '' }}
+          ARCHIVE_NAME: packages-action-${{ matrix.goOs }}-${{ matrix.goArch }}.zip
+      - name: Upload asset
+        run: |
+          VERSION_NAME=$(echo "${github.ref_name}" | grep -oP '(?<=release/).*')
+
+          RELEASE_TAG=$(
+            curl -L \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.UPLOAD_GITHUB_PAT }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${github.repository}/releases/tags/v${VERSION_NAME}
+          )
+
+          RELEASE_ID=$(echo "${RELEASE_TAG}" | grep -oPm1 '(?<="id": ).*(?=,)')
+          if [ -z ${ASSET_ID} ] ; 
+          then
+            RELEASE_ID=$(echo "${RELEASE_TAG}" | grep -oPm1 '(?<="id":)\d*(?=,)' | head -n1 )
+          fi
+
+          ASSET_UPLOAD=$(
+            curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.UPLOAD_GITHUB_PAT }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            -H "Content-Type: application/octet-stream" \
+            "https://uploads.github.com/repos/${github.repository}/releases/${RELEASE_ID}/assets?name=${ARCHIVE_NAME}" \
+            --data-binary "@${ARCHIVE_NAME}"
+          )
+
+          ASSET_ID=$(echo "${ASSET_UPLOAD}" | grep -oPm1 '(?<="id": ).*(?=,)')
+          if [ -z ${ASSET_ID} ] ; 
+          then
+              ASSET_ID=$(echo "${ASSET_UPLOAD}" | grep -oPm1 '(?<="id":)\d*(?=,)' | head -n1 )
+          fi
+
+          echo "Asset uploaded with Id ${ASSET_ID}"
+
+        env:
+          ARCHIVE_NAME: packages-action-${{ matrix.goOs }}-${{ matrix.goArch }}.zip
