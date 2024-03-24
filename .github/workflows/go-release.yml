@@ -3,9 +3,9 @@ name: Build, analyze an release
 
 on:
     push:
-      branches: [ "releases/**" ]
+      branches: [ "release/**" ]
     pull_request:
-      branches: [ "releases/**" ]
+      branches: [ "release/**" ]
   
 jobs:
 
