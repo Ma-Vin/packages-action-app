@@ -75,10 +75,22 @@ jobs:
           GOOS: ${{ matrix.goOs }}
           GOARCH: ${{ matrix.goArch }}
           FILE_NAME: packages-action-${{ matrix.goOs }}-${{ matrix.goArch }}${{ matrix.goOs == 'windows' && '.exe' || '' }}
-      - name: zip app binary
-        run: zip ${ARCHIVE_NAME} ${FILE_NAME}
+      - name: generate hash
+        run: | 
+          SHA256_VALUE=$(sha256sum ${BINARY_FILE_NAME})
+          SHA512_VALUE=$(sha512sum ${BINARY_FILE_NAME})
+          echo "CheckSum sha256: ${SHA256_VALUE}"
+          echo "CheckSum sha512: ${SHA512_VALUE}"
+          echo "sha256: ${SHA256_VALUE}" >> HASH_FILE_NAME
+          echo "sha512: ${SHA512_VALUE}" >> HASH_FILE_NAME
         env:
-          FILE_NAME: packages-action-${{ matrix.goOs }}-${{ matrix.goArch }}${{ matrix.goOs == 'windows' && '.exe' || '' }}
+          BINARY_FILE_NAME: packages-action-${{ matrix.goOs }}-${{ matrix.goArch }}${{ matrix.goOs == 'windows' && '.exe' || '' }}
+          HASH_FILE_NAME: packages-action-${{ matrix.goOs }}-${{ matrix.goArch }}-hash.txt
+      - name: zip app binary
+        run: zip ${ARCHIVE_NAME} ${BINARY_FILE_NAME} ${HASH_FILE_NAME}
+        env:
+          BINARY_FILE_NAME: packages-action-${{ matrix.goOs }}-${{ matrix.goArch }}${{ matrix.goOs == 'windows' && '.exe' || '' }}
+          HASH_FILE_NAME: packages-action-${{ matrix.goOs }}-${{ matrix.goArch }}-hash.txt
           ARCHIVE_NAME: packages-action-${{ matrix.goOs }}-${{ matrix.goArch }}.zip
       - name: Upload asset
         run: |
