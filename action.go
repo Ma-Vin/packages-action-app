@@ -7,8 +7,15 @@ import (
 	"github.com/ma-vin/packages-action/service"
 )
 
+var (
+	version    string
+	gitSha     string
+	branchName string
+)
+
 // Main funtion to execute the actions process
 func main() {
+	printVersion()
 	log.Println("Start packages action")
 	initAll()
 
@@ -32,4 +39,17 @@ func initAll() {
 	service.InitAllCandidates()
 	service.InitAllDeletion()
 	service.InitAllGitHubRest()
+}
+
+// prints the version, git hash and branch name if set by ldflags
+func printVersion() {
+	if version != "" {
+		log.Printf("Version: %s", version)
+	}
+	if gitSha != "" {
+		log.Printf("GitSha:  %s", gitSha)
+	}
+	if branchName != "" {
+		log.Printf("Branch:  %s", branchName)
+	}
 }
