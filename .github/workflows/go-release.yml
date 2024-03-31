@@ -115,7 +115,7 @@ jobs:
           echo "upload to release with id ${RELEASE_ID}"
 
           ASSET_UPLOAD=$(
-            curl -s -S -L \
+            curl -v -L \
             -X POST \
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.UPLOAD_GITHUB_PAT }}" \
