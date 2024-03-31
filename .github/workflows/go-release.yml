@@ -48,7 +48,7 @@ jobs:
           )
 
           RELEASE_ID=$(echo "${RELEASE_TAG}" | grep -oPm1 '(?<="id": ).*(?=,)')
-          if [ -z ${ASSET_ID} ] ; 
+          if [ -z ${RELEASE_ID} ] ; 
           then
             RELEASE_ID=$(echo "${RELEASE_TAG}" | grep -oPm1 '(?<="id":)\d*(?=,)' | head -n1 )
           fi
@@ -83,8 +83,8 @@ jobs:
           SHA512_VALUE=$(sha512sum ${BINARY_FILE_NAME})
           echo "CheckSum sha256: ${SHA256_VALUE}"
           echo "CheckSum sha512: ${SHA512_VALUE}"
-          echo "sha256: ${SHA256_VALUE}" >> HASH_FILE_NAME
-          echo "sha512: ${SHA512_VALUE}" >> HASH_FILE_NAME
+          echo "sha256: ${SHA256_VALUE}" >> ${HASH_FILE_NAME}
+          echo "sha512: ${SHA512_VALUE}" >> ${HASH_FILE_NAME}
         env:
           BINARY_FILE_NAME: packages-action-${{ matrix.goOs }}-${{ matrix.goArch }}${{ matrix.goOs == 'windows' && '.exe' || '' }}
           HASH_FILE_NAME: packages-action-${{ matrix.goOs }}-${{ matrix.goArch }}-hash.txt
@@ -107,7 +107,7 @@ jobs:
           )
 
           RELEASE_ID=$(echo "${RELEASE_TAG}" | grep -oPm1 '(?<="id": ).*(?=,)')
-          if [ -z ${ASSET_ID} ] ; 
+          if [ -z ${RELEASE_ID} ] ; 
           then
             RELEASE_ID=$(echo "${RELEASE_TAG}" | grep -oPm1 '(?<="id":)\d*(?=,)' | head -n1 )
           fi
