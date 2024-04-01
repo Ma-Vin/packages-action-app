@@ -126,15 +126,5 @@ jobs:
             --data-binary "@${ARCHIVE_NAME}"
           )
 
-          echo "ASSET_UPLOAD: ${ASSET_UPLOAD}"
-
-          ASSET_ID=$(echo "${ASSET_UPLOAD}" | grep -oPm1 '(?<="id": ).*(?=,)')
-          if [ -z ${ASSET_ID} ] ; 
-          then
-              ASSET_ID=$(echo "${ASSET_UPLOAD}" | grep -oPm1 '(?<="id":)\d*(?=,)' | head -n1 )
-          fi
-
-          echo "Asset uploaded with Id ${ASSET_ID}"
-
         env:
           ARCHIVE_NAME: packages-action-${{ matrix.goOs }}-${{ matrix.goArch }}.zip
