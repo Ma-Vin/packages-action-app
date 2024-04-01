@@ -126,6 +126,8 @@ jobs:
             --data-binary "@${ARCHIVE_NAME}"
           )
 
+          echo "ASSET_UPLOAD: ${ASSET_UPLOAD}"
+
           ASSET_ID=$(echo "${ASSET_UPLOAD}" | grep -oPm1 '(?<="id": ).*(?=,)')
           if [ -z ${ASSET_ID} ] ; 
           then
