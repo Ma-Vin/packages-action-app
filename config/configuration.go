@@ -14,6 +14,8 @@ const (
 	// package type for a not supported or unknown type
 	UNKNOWN string = "unkown"
 
+	// Input action variables get a prefix at GitHub
+	ENV_GITHUB_PREFIX               string = "INPUT_"
 	ENV_NAME_GITHUB_REST_API_URL    string = "GITHUB_REST_API_URL"
 	ENV_NAME_ORGANIZATION           string = "ORGANIZATION"
 	ENV_NAME_USER                   string = "USER"
@@ -103,9 +105,13 @@ func getTrimEnvOrDefault(envName string, defaultValue string) string {
 	return defaultValue
 }
 
-// determines an environment variable and return it as trimmed string
+// determines an environment variable and return it as trimmed string. If there is none a retry with prefix is called
 func getTrimEnv(envName string) string {
-	return strings.TrimSpace(os.Getenv(envName))
+	result := strings.TrimSpace(os.Getenv(envName))
+	if result != "" {
+		return result
+	}
+	return strings.TrimSpace(os.Getenv(ENV_GITHUB_PREFIX + envName))
 }
 
 // determines an environment variable and return it as bool

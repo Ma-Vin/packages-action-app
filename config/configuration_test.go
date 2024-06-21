@@ -8,18 +8,23 @@ import (
 )
 
 func unsetEnv() {
-	os.Unsetenv(ENV_NAME_GITHUB_REST_API_URL)
-	os.Unsetenv(ENV_NAME_ORGANIZATION)
-	os.Unsetenv(ENV_NAME_USER)
-	os.Unsetenv(ENV_NAME_PACKAGE_TYPE)
-	os.Unsetenv(ENV_NAME_PACKAGE_NAME)
-	os.Unsetenv(ENV_NAME_VERSION_NAME_TO_DELETE)
-	os.Unsetenv(ENV_NAME_DELETE_SNAPSHOTS)
-	os.Unsetenv(ENV_NAME_NUMBER_MAJOR_TO_KEEP)
-	os.Unsetenv(ENV_NAME_NUMBER_MINOR_TO_KEEP)
-	os.Unsetenv(ENV_NAME_NUMBER_PATCH_TO_KEEP)
-	os.Unsetenv(ENV_NAME_GITHUB_TOKEN)
-	os.Unsetenv(ENV_NAME_DRY_RUN)
+	unsetEnvWithPrefix("")
+	unsetEnvWithPrefix(ENV_GITHUB_PREFIX)
+}
+
+func unsetEnvWithPrefix(prefix string) {
+	os.Unsetenv(prefix + ENV_NAME_GITHUB_REST_API_URL)
+	os.Unsetenv(prefix + ENV_NAME_ORGANIZATION)
+	os.Unsetenv(prefix + ENV_NAME_USER)
+	os.Unsetenv(prefix + ENV_NAME_PACKAGE_TYPE)
+	os.Unsetenv(prefix + ENV_NAME_PACKAGE_NAME)
+	os.Unsetenv(prefix + ENV_NAME_VERSION_NAME_TO_DELETE)
+	os.Unsetenv(prefix + ENV_NAME_DELETE_SNAPSHOTS)
+	os.Unsetenv(prefix + ENV_NAME_NUMBER_MAJOR_TO_KEEP)
+	os.Unsetenv(prefix + ENV_NAME_NUMBER_MINOR_TO_KEEP)
+	os.Unsetenv(prefix + ENV_NAME_NUMBER_PATCH_TO_KEEP)
+	os.Unsetenv(prefix + ENV_NAME_GITHUB_TOKEN)
+	os.Unsetenv(prefix + ENV_NAME_DRY_RUN)
 }
 
 func TestReadConfigurationUserAndOrganization(t *testing.T) {
@@ -62,6 +67,33 @@ func TestReadConfigurationUser(t *testing.T) {
 	os.Setenv(ENV_NAME_PACKAGE_NAME, "packages-action-app")
 	os.Setenv(ENV_NAME_DELETE_SNAPSHOTS, "TRUE")
 	os.Setenv(ENV_NAME_GITHUB_TOKEN, "abcdef123")
+
+	conf, err := ReadConfiguration()
+
+	testutil.AssertNil(err, t, "err")
+	testutil.AssertNotNil(conf, t, "conf")
+	testutil.AssertEquals("https://api.github.com", conf.GitHubRestUrl, t, "GitHub rest url")
+	testutil.AssertEquals("", conf.Organization, t, "organization")
+	testutil.AssertEquals("Ma-Vin", conf.User, t, "user")
+	testutil.AssertEquals("maven", conf.PackageType, t, "package type")
+	testutil.AssertEquals("packages-action-app", conf.PackageName, t, "package name")
+	testutil.AssertEquals("", conf.VersionNameToDelete, t, "version name to delete")
+	testutil.AssertEquals(true, conf.DeleteSnapshots, t, "delete snapshots")
+	testutil.AssertEquals(-1, conf.NumberOfMajorVersionsToKeep, t, "number of major versions")
+	testutil.AssertEquals(-1, conf.NumberOfMinorVersionsToKeep, t, "number of minor versions")
+	testutil.AssertEquals(-1, conf.NumberOfPatchVersionsToKeep, t, "number of patch versions")
+	testutil.AssertEquals("abcdef123", conf.GithubToken, t, "github token")
+	testutil.AssertEquals(true, conf.DryRun, t, "dry run")
+}
+
+func TestReadConfigurationUserWithPrefix(t *testing.T) {
+	unsetEnv()
+
+	os.Setenv(ENV_GITHUB_PREFIX+ENV_NAME_USER, "Ma-Vin")
+	os.Setenv(ENV_GITHUB_PREFIX+ENV_NAME_PACKAGE_TYPE, MAVEN)
+	os.Setenv(ENV_GITHUB_PREFIX+ENV_NAME_PACKAGE_NAME, "packages-action-app")
+	os.Setenv(ENV_GITHUB_PREFIX+ENV_NAME_DELETE_SNAPSHOTS, "TRUE")
+	os.Setenv(ENV_GITHUB_PREFIX+ENV_NAME_GITHUB_TOKEN, "abcdef123")
 
 	conf, err := ReadConfiguration()
 
