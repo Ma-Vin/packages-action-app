@@ -44,7 +44,7 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.UPLOAD_GITHUB_PAT }}" \
             https://api.github.com/repos/${GITHUB_REPOSITORY}/releases \
-            -d "{\"tag_name\":\"v${VERSION_NAME}\",\"target_commitish\":\"${GITHUB_REF_NAME}\",\"name\":\"v${VERSION_NAME}\",\"body\":\"Workflow based created release on branch ${GITHUB_REF_NAME}\",\"draft\":false,\"prerelease\":false,\"generate_release_notes\":false}"
+            -d "{\"tag_name\":\"${VERSION_NAME}\",\"target_commitish\":\"${GITHUB_REF_NAME}\",\"name\":\"${VERSION_NAME}\",\"body\":\"Workflow based created release on branch ${GITHUB_REF_NAME}\",\"draft\":false,\"prerelease\":false,\"generate_release_notes\":false}"
           )
 
           RELEASE_ID=$(echo "${RELEASE_TAG}" | grep -oPm1 '(?<="id": ).*(?=,)')
@@ -103,7 +103,7 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.UPLOAD_GITHUB_PAT }}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/v${VERSION_NAME}
+            https://api.github.com/repos/${GITHUB_REPOSITORY}/releases/tags/${VERSION_NAME}
           )
 
           RELEASE_ID=$(echo "${RELEASE_TAG}" | grep -oPm1 '(?<="id": ).*(?=,)')
