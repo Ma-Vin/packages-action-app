@@ -1,4 +1,4 @@
-![Go Workflow Action](https://github.com/Ma-Vin/packages-action-app/actions/workflows/go.yml/badge.svg)
+![Go Workflow Action](https://github.com/Ma-Vin/packages-action-app/actions/workflows/go-release.yml/badge.svg?branch=release/v1.1)
 
 # Package Action Application
 
