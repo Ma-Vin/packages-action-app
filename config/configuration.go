@@ -17,8 +17,8 @@ const (
 	// Input action variables get a prefix at GitHub
 	ENV_GITHUB_PREFIX               string = "INPUT_"
 	ENV_NAME_GITHUB_REST_API_URL    string = "GITHUB_REST_API_URL"
-	ENV_NAME_ORGANIZATION           string = "ORGANIZATION"
-	ENV_NAME_USER                   string = "USER"
+	ENV_NAME_ORGANIZATION           string = "GITHUB_ORGANIZATION"
+	ENV_NAME_USER                   string = "GITHUB_USER"
 	ENV_NAME_PACKAGE_TYPE           string = "PACKAGE_TYPE"
 	ENV_NAME_PACKAGE_NAME           string = "PACKAGE_NAME"
 	ENV_NAME_VERSION_NAME_TO_DELETE string = "VERSION_NAME_TO_DELETE"
