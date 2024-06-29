@@ -26,6 +26,7 @@ func unsetEnvWithPrefix(prefix string) {
 	os.Unsetenv(prefix + ENV_NAME_GITHUB_TOKEN)
 	os.Unsetenv(prefix + ENV_NAME_DRY_RUN)
 	os.Unsetenv(prefix + ENV_NAME_DEBUG)
+	os.Unsetenv(prefix + ENV_NAME_TIMEOUT)
 }
 
 func TestReadConfigurationUserAndOrganization(t *testing.T) {
@@ -86,6 +87,7 @@ func TestReadConfigurationUser(t *testing.T) {
 	testutil.AssertEquals("abcdef123", conf.GithubToken, t, "github token")
 	testutil.AssertEquals(true, conf.DryRun, t, "dry run")
 	testutil.AssertEquals(false, conf.Debug, t, "debug log")
+	testutil.AssertEquals(3, conf.Timeout, t, "timeout")
 }
 
 func TestReadConfigurationUserWithPrefix(t *testing.T) {
@@ -114,6 +116,7 @@ func TestReadConfigurationUserWithPrefix(t *testing.T) {
 	testutil.AssertEquals("abcdef123", conf.GithubToken, t, "github token")
 	testutil.AssertEquals(true, conf.DryRun, t, "dry run")
 	testutil.AssertEquals(false, conf.Debug, t, "debug log")
+	testutil.AssertEquals(3, conf.Timeout, t, "timeout")
 }
 
 func TestReadConfigurationOrganization(t *testing.T) {
@@ -142,6 +145,7 @@ func TestReadConfigurationOrganization(t *testing.T) {
 	testutil.AssertEquals("abcdef123", conf.GithubToken, t, "github token")
 	testutil.AssertEquals(true, conf.DryRun, t, "dry run")
 	testutil.AssertEquals(false, conf.Debug, t, "debug log")
+	testutil.AssertEquals(3, conf.Timeout, t, "timeout")
 }
 
 func TestReadConfigurationUnkownPackageType(t *testing.T) {
@@ -234,6 +238,7 @@ func TestReadConfigurationUserAllSet(t *testing.T) {
 	os.Setenv(ENV_NAME_GITHUB_TOKEN, "abcdef123")
 	os.Setenv(ENV_NAME_DRY_RUN, "false")
 	os.Setenv(ENV_NAME_DEBUG, "true")
+	os.Setenv(ENV_NAME_TIMEOUT, "5")
 
 	conf, err := ReadConfiguration()
 
@@ -252,6 +257,7 @@ func TestReadConfigurationUserAllSet(t *testing.T) {
 	testutil.AssertEquals("abcdef123", conf.GithubToken, t, "github token")
 	testutil.AssertEquals(false, conf.DryRun, t, "dry run")
 	testutil.AssertEquals(true, conf.Debug, t, "debug log")
+	testutil.AssertEquals(5, conf.Timeout, t, "timeout")
 }
 
 func TestReadConfigurationInvalidInt(t *testing.T) {
@@ -284,6 +290,7 @@ func TestReadConfigurationInvalidInt(t *testing.T) {
 	testutil.AssertEquals("abcdef123", conf.GithubToken, t, "github token")
 	testutil.AssertEquals(true, conf.DryRun, t, "dry run")
 	testutil.AssertEquals(false, conf.Debug, t, "debug log")
+	testutil.AssertEquals(3, conf.Timeout, t, "timeout")
 }
 
 func TestReadConfigurationWithGitHubUrl(t *testing.T) {
@@ -313,4 +320,5 @@ func TestReadConfigurationWithGitHubUrl(t *testing.T) {
 	testutil.AssertEquals("abcdef123", conf.GithubToken, t, "github token")
 	testutil.AssertEquals(true, conf.DryRun, t, "dry run")
 	testutil.AssertEquals(false, conf.Debug, t, "debug log")
+	testutil.AssertEquals(3, conf.Timeout, t, "timeout")
 }

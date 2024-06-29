@@ -174,7 +174,7 @@ func delete(url string, configuration *config.Config, parameters []queryParamete
 
 // creates the client, request, adds header elemets and url query parameters before sending. TLS is not configured explicitly since tls.Config uses TLS1.2 as MinVersion
 func executeRequestWithoutBody(operation string, url string, configuration *config.Config, parameters []queryParameter) (*http.Response, error) {
-	c := http.Client{Timeout: time.Duration(1) * time.Second}
+	c := http.Client{Timeout: time.Duration(configuration.Timeout) * time.Second}
 
 	req, err := http.NewRequest(operation, url, nil)
 	if err != nil {
