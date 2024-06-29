@@ -50,12 +50,15 @@ func DeleteVersions(config *config.Config) error {
 
 	logCandidates(candidates)
 
+	count := len(*candidates)
+	if count == 0 {
+		return nil
+	}
+
 	if config.DryRun {
 		log.Println("Skip deletion because of dryRun")
 		return nil
 	}
-
-	count := len(*candidates)
 
 	channel := make(chan error, count)
 	var wg sync.WaitGroup
@@ -97,6 +100,10 @@ func deleteCandidate(candidate *Candidate, config *config.Config, channel chan e
 
 // logs the candidates which will be deleted
 func logCandidates(candidates *[]Candidate) {
+	if len(*candidates) == 0 {
+		log.Println("no candidates determined")
+		return
+	}
 	log.Println("the following elements will be deleted")
 	for i, c := range *candidates {
 		log.Printf("  %d. type: %s name: '%s' id: %d created: %s updated: %s description: '%s'", i+1, getCandidateTypeText(&c.Type), c.Name, c.Id, c.CreatedAt, c.UpdatedAt, c.Description)

@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 	"strings"
 
@@ -25,9 +26,11 @@ type Candidate struct {
 
 type GitHubGetVersionsRestExecutor func(config *config.Config) (*[]github_model.Version, error)
 type GitHubGetPackageRestExecutor func(config *config.Config) (*github_model.UserPackage, error)
+type GitHubGetAllPackagesRestExecutor func(config *config.Config) (*[]github_model.UserPackage, error)
 
 var VersionsGetExecutor GitHubGetVersionsRestExecutor = initVersionsGetExecutor()
 var PackageGetExecutor GitHubGetPackageRestExecutor = initPackageGetExecutor()
+var AllPackagesGetExecutor GitHubGetAllPackagesRestExecutor = initAllPackagesGetExecutor()
 
 func initVersionsGetExecutor() GitHubGetVersionsRestExecutor {
 	return func(config *config.Config) (*[]github_model.Version, error) {
@@ -41,14 +44,30 @@ func initPackageGetExecutor() GitHubGetPackageRestExecutor {
 	}
 }
 
+func initAllPackagesGetExecutor() GitHubGetAllPackagesRestExecutor {
+	return func(config *config.Config) (*[]github_model.UserPackage, error) {
+		return GetUserPackages(config)
+	}
+}
+
 func InitAllCandidates() {
 	VersionsGetExecutor = initVersionsGetExecutor()
 	PackageGetExecutor = initPackageGetExecutor()
+	AllPackagesGetExecutor = initAllPackagesGetExecutor()
 }
 
 // Determine all candidates to delete. A candidate can be either a version or a package
 // If a package would be empty after version deletion, the package is to be deleted
 func DetermineCandidates(config *config.Config) (*[]Candidate, error) {
+	existence, err := checkPackageExistence(config)
+	if err != nil {
+		return nil, err
+	}
+	if !existence {
+		log.Printf("There does not exists a package with name %s of type %s at user %s: skip deletion", config.PackageName, config.PackageType, config.User)
+		return &[]Candidate{}, nil
+	}
+
 	candidates, deletePackage, err := determineRelevantVersions(config)
 	if err != nil {
 		return nil, err
@@ -63,6 +82,23 @@ func DetermineCandidates(config *config.Config) (*[]Candidate, error) {
 		return nil, err
 	}
 	return &[]Candidate{*candidate}, nil
+}
+
+// Checks whether there exists the package for the user
+func checkPackageExistence(config *config.Config) (bool, error) {
+	packages, err := AllPackagesGetExecutor(config)
+	if err != nil {
+		return false, err
+	}
+	if packages == nil || len(*packages) == 0 {
+		return false, nil
+	}
+	for _, p := range *packages {
+		if p.Name == config.PackageName {
+			return true, nil
+		}
+	}
+	return false, nil
 }
 
 // Determines all relevant versions which can be deleted and an indicator if package would be empty after version deletion

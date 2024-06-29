@@ -60,6 +60,7 @@ func TestMainDeleteVersionsDryRun(t *testing.T) {
 
 	main()
 
+	testutil.AssertEquals(1, testutil.GetAllUserPackagesCounter, t, "Count of GetAllUserPackages")
 	testutil.AssertEquals(1, testutil.GetUserPackageVersionsCounter, t, "Count of GetUserPackageVersions")
 	testutil.AssertEquals(0, testutil.DeleteUserPackageVersionCounter, t, "Count of DeleteUserPackageVersion")
 	testutil.AssertEquals(0, testutil.GetUserPackageCounter, t, "Count of GetUserPackage")
@@ -82,6 +83,7 @@ func TestMainDeleteVersionsRealRun(t *testing.T) {
 
 	main()
 
+	testutil.AssertEquals(1, testutil.GetAllUserPackagesCounter, t, "Count of GetAllUserPackages")
 	testutil.AssertEquals(1, testutil.GetUserPackageVersionsCounter, t, "Count of GetUserPackageVersions")
 	testutil.AssertEquals(2, testutil.DeleteUserPackageVersionCounter, t, "Count of DeleteUserPackageVersion")
 	testutil.AssertEquals(0, testutil.GetUserPackageCounter, t, "Count of GetUserPackage")
@@ -103,6 +105,7 @@ func TestMainDeleteAllVersionsDryRun(t *testing.T) {
 
 	main()
 
+	testutil.AssertEquals(1, testutil.GetAllUserPackagesCounter, t, "Count of GetAllUserPackages")
 	testutil.AssertEquals(1, testutil.GetUserPackageVersionsCounter, t, "Count of GetUserPackageVersions")
 	testutil.AssertEquals(0, testutil.DeleteUserPackageVersionCounter, t, "Count of DeleteUserPackageVersion")
 	testutil.AssertEquals(1, testutil.GetUserPackageCounter, t, "Count of GetUserPackage")
@@ -125,8 +128,31 @@ func TestMainDeleteAllVersionsRealRun(t *testing.T) {
 
 	main()
 
+	testutil.AssertEquals(1, testutil.GetAllUserPackagesCounter, t, "Count of GetAllUserPackages")
 	testutil.AssertEquals(1, testutil.GetUserPackageVersionsCounter, t, "Count of GetUserPackageVersions")
 	testutil.AssertEquals(0, testutil.DeleteUserPackageVersionCounter, t, "Count of DeleteUserPackageVersion")
 	testutil.AssertEquals(1, testutil.GetUserPackageCounter, t, "Count of GetUserPackage")
 	testutil.AssertEquals(1, testutil.DeleteUserPackageCounter, t, "Count of DeleteUserPackage")
+}
+
+func TestMainNoPackageDryRun(t *testing.T) {
+	unsetEnv()
+
+	mockServerUrl := testutil.CreateAndStartMock("Ma-Vin", config.MAVEN, "DummyPackage", nil, nil)
+	defer testutil.StopMock()
+
+	os.Setenv(config.ENV_NAME_GITHUB_REST_API_URL, mockServerUrl)
+	os.Setenv(config.ENV_NAME_USER, "Ma-Vin")
+	os.Setenv(config.ENV_NAME_PACKAGE_TYPE, config.MAVEN)
+	os.Setenv(config.ENV_NAME_PACKAGE_NAME, "DummyPackage")
+	os.Setenv(config.ENV_NAME_DELETE_SNAPSHOTS, "true")
+	os.Setenv(config.ENV_NAME_GITHUB_TOKEN, "abcdef123")
+
+	main()
+
+	testutil.AssertEquals(1, testutil.GetAllUserPackagesCounter, t, "Count of GetAllUserPackages")
+	testutil.AssertEquals(0, testutil.GetUserPackageVersionsCounter, t, "Count of GetUserPackageVersions")
+	testutil.AssertEquals(0, testutil.DeleteUserPackageVersionCounter, t, "Count of DeleteUserPackageVersion")
+	testutil.AssertEquals(0, testutil.GetUserPackageCounter, t, "Count of GetUserPackage")
+	testutil.AssertEquals(0, testutil.DeleteUserPackageCounter, t, "Count of DeleteUserPackage")
 }

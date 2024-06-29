@@ -76,6 +76,18 @@ func TestDeleteVersionsSuccessfulPackageType(t *testing.T) {
 	testutil.AssertEquals(1, countDeletePackageExecuted, t, "delete package executed")
 }
 
+func TestDeleteVersionsNoCandidates(t *testing.T) {
+	initDeletionTest()
+
+	deletionCandidates = &[]Candidate{}
+
+	err := DeleteVersions(&deletionConf)
+	testutil.AssertNil(err, t, "err")
+	testutil.AssertEquals(1, countGetCandidatesExecuted, t, "get candidates executed")
+	testutil.AssertEquals(0, countDeleteVersionExecuted, t, "delete version executed")
+	testutil.AssertEquals(0, countDeletePackageExecuted, t, "delete package executed")
+}
+
 func TestDeleteVersionsUnknwonType(t *testing.T) {
 	initDeletionTest()
 
