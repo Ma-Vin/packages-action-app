@@ -50,7 +50,7 @@ func GetUserPackages(configuration *config.Config) (*[]github_model.UserPackage,
 	}
 
 	var userPackages []github_model.UserPackage
-	err = mapJsonResponse(response, &userPackages)
+	err = mapJsonResponse(response, &userPackages, configuration)
 
 	if err != nil {
 		return nil, err
@@ -70,7 +70,7 @@ func GetUserPackage(packageName string, configuration *config.Config) (*github_m
 	}
 
 	var userPackage github_model.UserPackage
-	err = mapJsonResponse(response, &userPackage)
+	err = mapJsonResponse(response, &userPackage, configuration)
 
 	if err != nil {
 		return nil, err
@@ -88,7 +88,7 @@ func DeleteUserPackage(packageName string, configuration *config.Config) error {
 	if err != nil {
 		return err
 	}
-	return checkResponseStatusCode(response)
+	return checkResponseStatusCode(response, configuration)
 }
 
 // calls GitHub rest api to get all versions of a certain package, type and user.
@@ -102,7 +102,7 @@ func GetUserPackageVersions(packageName string, configuration *config.Config) (*
 	}
 
 	var versions []github_model.Version
-	err = mapJsonResponse(response, &versions)
+	err = mapJsonResponse(response, &versions, configuration)
 
 	if err != nil {
 		return nil, err
@@ -121,7 +121,7 @@ func GetUserPackageVersion(packageName string, versionId int, configuration *con
 	}
 
 	var version github_model.Version
-	err = mapJsonResponse(response, &version)
+	err = mapJsonResponse(response, &version, configuration)
 
 	if err != nil {
 		return nil, err
@@ -139,12 +139,12 @@ func DeleteUserPackageVersion(packageName string, versionId int, configuration *
 	if err != nil {
 		return err
 	}
-	return checkResponseStatusCode(response)
+	return checkResponseStatusCode(response, configuration)
 }
 
 // maps the the json body of a response to a given target object
-func mapJsonResponse(response *http.Response, target any) error {
-	err := checkResponseStatusCode(response)
+func mapJsonResponse(response *http.Response, target any, configuration *config.Config) error {
+	err := checkResponseStatusCode(response, configuration)
 	if err != nil {
 		return err
 	}
@@ -215,12 +215,30 @@ func concatUrl(urlParts ...string) string {
 }
 
 // checks if the response has a failure status code and creates in this case an error
-func checkResponseStatusCode(response *http.Response) error {
+func checkResponseStatusCode(response *http.Response, configuration *config.Config) error {
 	if response.StatusCode >= 400 {
+		logHeader(&response.Header, "response header", configuration)
 		if response.Request != nil {
+			logHeader(&response.Request.Header, "request header", configuration)
 			return fmt.Errorf("an error status code occured at %s '%s': %d - %s", response.Request.Method, response.Request.URL, response.StatusCode, http.StatusText(response.StatusCode))
 		}
 		return fmt.Errorf("an error status code occured: %d - %s", response.StatusCode, http.StatusText(response.StatusCode))
 	}
 	return nil
+}
+
+func logHeader(response *http.Header, headerName string, configuration *config.Config) {
+	if !configuration.Debug {
+		return
+	}
+	fmt.Println(headerName)
+	for name, values := range *response {
+		if name == "Authorization" {
+			fmt.Println(name, "***")
+			continue
+		}
+		for _, value := range values {
+			fmt.Println(name, value)
+		}
+	}
 }

@@ -28,6 +28,7 @@ const (
 	ENV_NAME_NUMBER_PATCH_TO_KEEP   string = "NUMBER_PATCH_TO_KEEP"
 	ENV_NAME_GITHUB_TOKEN           string = "GITHUB_TOKEN"
 	ENV_NAME_DRY_RUN                string = "DRY_RUN"
+	ENV_NAME_DEBUG                  string = "DEBUG_LOGS"
 
 	gitHubUrl string = "https://api.github.com"
 )
@@ -58,6 +59,8 @@ type Config struct {
 	GithubToken string
 	// Indicator wether to run application without deletion or not. Default true (No deletetion)
 	DryRun bool
+	// Indicator wether to log more information
+	Debug bool
 }
 
 /*
@@ -87,6 +90,7 @@ func ReadConfiguration() (*Config, error) {
 	config.NumberOfPatchVersionsToKeep = getIntEnv(ENV_NAME_NUMBER_PATCH_TO_KEEP)
 	config.GithubToken = getTrimEnv(ENV_NAME_GITHUB_TOKEN)
 	config.DryRun = getBoolEnvDefault(ENV_NAME_DRY_RUN, true)
+	config.Debug = getBoolEnvDefault(ENV_NAME_DEBUG, false)
 
 	printConfig(&config)
 
@@ -201,6 +205,7 @@ func printConfig(config *Config) {
 		log.Println("  GithubToken:")
 	}
 	log.Println("  DryRun:              ", config.DryRun)
+	log.Println("  DebugLog:            ", config.Debug)
 }
 
 func printPositiv(text string, value int) {

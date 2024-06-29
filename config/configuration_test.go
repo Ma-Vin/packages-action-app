@@ -25,6 +25,7 @@ func unsetEnvWithPrefix(prefix string) {
 	os.Unsetenv(prefix + ENV_NAME_NUMBER_PATCH_TO_KEEP)
 	os.Unsetenv(prefix + ENV_NAME_GITHUB_TOKEN)
 	os.Unsetenv(prefix + ENV_NAME_DRY_RUN)
+	os.Unsetenv(prefix + ENV_NAME_DEBUG)
 }
 
 func TestReadConfigurationUserAndOrganization(t *testing.T) {
@@ -84,6 +85,7 @@ func TestReadConfigurationUser(t *testing.T) {
 	testutil.AssertEquals(-1, conf.NumberOfPatchVersionsToKeep, t, "number of patch versions")
 	testutil.AssertEquals("abcdef123", conf.GithubToken, t, "github token")
 	testutil.AssertEquals(true, conf.DryRun, t, "dry run")
+	testutil.AssertEquals(false, conf.Debug, t, "debug log")
 }
 
 func TestReadConfigurationUserWithPrefix(t *testing.T) {
@@ -111,6 +113,7 @@ func TestReadConfigurationUserWithPrefix(t *testing.T) {
 	testutil.AssertEquals(-1, conf.NumberOfPatchVersionsToKeep, t, "number of patch versions")
 	testutil.AssertEquals("abcdef123", conf.GithubToken, t, "github token")
 	testutil.AssertEquals(true, conf.DryRun, t, "dry run")
+	testutil.AssertEquals(false, conf.Debug, t, "debug log")
 }
 
 func TestReadConfigurationOrganization(t *testing.T) {
@@ -138,6 +141,7 @@ func TestReadConfigurationOrganization(t *testing.T) {
 	testutil.AssertEquals(-1, conf.NumberOfPatchVersionsToKeep, t, "number of patch versions")
 	testutil.AssertEquals("abcdef123", conf.GithubToken, t, "github token")
 	testutil.AssertEquals(true, conf.DryRun, t, "dry run")
+	testutil.AssertEquals(false, conf.Debug, t, "debug log")
 }
 
 func TestReadConfigurationUnkownPackageType(t *testing.T) {
@@ -229,6 +233,7 @@ func TestReadConfigurationUserAllSet(t *testing.T) {
 	os.Setenv(ENV_NAME_NUMBER_PATCH_TO_KEEP, "1")
 	os.Setenv(ENV_NAME_GITHUB_TOKEN, "abcdef123")
 	os.Setenv(ENV_NAME_DRY_RUN, "false")
+	os.Setenv(ENV_NAME_DEBUG, "true")
 
 	conf, err := ReadConfiguration()
 
@@ -246,6 +251,7 @@ func TestReadConfigurationUserAllSet(t *testing.T) {
 	testutil.AssertEquals(1, conf.NumberOfPatchVersionsToKeep, t, "number of patch versions")
 	testutil.AssertEquals("abcdef123", conf.GithubToken, t, "github token")
 	testutil.AssertEquals(false, conf.DryRun, t, "dry run")
+	testutil.AssertEquals(true, conf.Debug, t, "debug log")
 }
 
 func TestReadConfigurationInvalidInt(t *testing.T) {
@@ -277,6 +283,7 @@ func TestReadConfigurationInvalidInt(t *testing.T) {
 	testutil.AssertEquals(1, conf.NumberOfPatchVersionsToKeep, t, "number of patch versions")
 	testutil.AssertEquals("abcdef123", conf.GithubToken, t, "github token")
 	testutil.AssertEquals(true, conf.DryRun, t, "dry run")
+	testutil.AssertEquals(false, conf.Debug, t, "debug log")
 }
 
 func TestReadConfigurationWithGitHubUrl(t *testing.T) {
@@ -305,4 +312,5 @@ func TestReadConfigurationWithGitHubUrl(t *testing.T) {
 	testutil.AssertEquals(-1, conf.NumberOfPatchVersionsToKeep, t, "number of patch versions")
 	testutil.AssertEquals("abcdef123", conf.GithubToken, t, "github token")
 	testutil.AssertEquals(true, conf.DryRun, t, "dry run")
+	testutil.AssertEquals(false, conf.Debug, t, "debug log")
 }
