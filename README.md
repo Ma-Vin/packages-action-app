@@ -1,4 +1,4 @@
-![Go Workflow Action](https://github.com/Ma-Vin/packages-action-app/actions/workflows/go.yml/badge.svg)
+![Go Workflow Action](https://github.com/Ma-Vin/packages-action-app/actions/workflows/go-release.yml/badge.svg?branch=release/v1.1.1)
 
 # Package Action Application
 
@@ -32,6 +32,8 @@ The application has to be configured by environment variables
 | NUMBER_PATCH_TO_KEEP   |                    | keep all                 | Positive number of patch versions to keep (within a minor version)                                                                                     |
 | GITHUB_TOKEN           | :heavy_check_mark: |                          | The access token to use for bearer authentication against GitHub rest api                                                                              |
 | DRY_RUN                |                    | *true*                   | Indicator whether to print deletion candidates only or to delete versions/package                                                                      | 
+| DEBUG_LOGS             |                    | *false*                  | Indicator whether to print more detail informations (At the moment not much additional)                                                                | 
+| REST_TIMEOUT           |                    | *3*                      | Timeout in seconds to use against GitHub Rest Api                                                                                                                 | 
 
 At least one deletion indicator of *VERSION_NAME_TO_DELETE, DELETE_SNAPSHOTS, NUMBER_MAJOR_TO_KEEP NUMBER_MINOR_TO_KEEP*
 or

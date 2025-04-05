@@ -31,6 +31,10 @@ func initCandidateTest() {
 	PackageGetExecutor = func(config *config.Config) (*github_model.UserPackage, error) {
 		return &candidatePacakge, nil
 	}
+
+	AllPackagesGetExecutor = func(config *config.Config) (*[]github_model.UserPackage, error) {
+		return &[]github_model.UserPackage{candidatePacakge}, nil
+	}
 }
 
 func TestDetermineCandidatesVersionName(t *testing.T) {

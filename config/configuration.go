@@ -28,6 +28,8 @@ const (
 	ENV_NAME_NUMBER_PATCH_TO_KEEP   string = "NUMBER_PATCH_TO_KEEP"
 	ENV_NAME_GITHUB_TOKEN           string = "GITHUB_TOKEN"
 	ENV_NAME_DRY_RUN                string = "DRY_RUN"
+	ENV_NAME_DEBUG                  string = "DEBUG_LOGS"
+	ENV_NAME_TIMEOUT                string = "REST_TIMEOUT"
 
 	gitHubUrl string = "https://api.github.com"
 )
@@ -58,6 +60,10 @@ type Config struct {
 	GithubToken string
 	// Indicator wether to run application without deletion or not. Default true (No deletetion)
 	DryRun bool
+	// Indicator wether to log more information
+	Debug bool
+	// Timeout in seconds for rest calls
+	Timeout int
 }
 
 /*
@@ -72,6 +78,8 @@ Reads the configuration from environment variables:
   - NUMBER_MINOR_TO_KEEP
   - NUMBER_PATCH_TO_KEEP
   - GITHUB_TOKEN
+  - DEBUG_LOGS
+  - REST_TIMEOUT
 */
 func ReadConfiguration() (*Config, error) {
 	var config Config
@@ -87,6 +95,8 @@ func ReadConfiguration() (*Config, error) {
 	config.NumberOfPatchVersionsToKeep = getIntEnv(ENV_NAME_NUMBER_PATCH_TO_KEEP)
 	config.GithubToken = getTrimEnv(ENV_NAME_GITHUB_TOKEN)
 	config.DryRun = getBoolEnvDefault(ENV_NAME_DRY_RUN, true)
+	config.Debug = getBoolEnvDefault(ENV_NAME_DEBUG, false)
+	config.Timeout = getIntEnvDefault(ENV_NAME_TIMEOUT, 3)
 
 	printConfig(&config)
 
@@ -130,20 +140,25 @@ func getBoolEnvDefault(envName string, defaultValue bool) bool {
 
 // determines an environment variable and return it as int.
 func getIntEnv(envName string) int {
+	return getIntEnvDefault(envName, -1)
+}
+
+// determines an environment variable and return it as int if present, other wise the given default value
+func getIntEnvDefault(envName string, defaultValue int) int {
 	envValue := getTrimEnv(envName)
 	if envValue != "" {
 		res, err := strconv.Atoi(os.Getenv(envName))
 		if err != nil {
 			log.Println(err)
-			return -1
+			return defaultValue
 		}
 		if res <= 0 {
 			log.Println("Only positiv values are allowed but found ", res, " for environment variable ", envName)
-			return -1
+			return defaultValue
 		}
 		return res
 	}
-	return -1
+	return defaultValue
 }
 
 // maps a given string to a package type
@@ -201,6 +216,8 @@ func printConfig(config *Config) {
 		log.Println("  GithubToken:")
 	}
 	log.Println("  DryRun:              ", config.DryRun)
+	log.Println("  DebugLog:            ", config.Debug)
+	log.Println("  RestTimeout:         ", config.Timeout)
 }
 
 func printPositiv(text string, value int) {
