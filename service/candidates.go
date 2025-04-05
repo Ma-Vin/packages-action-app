@@ -2,12 +2,12 @@ package service
 
 import (
 	"fmt"
-	"log"
 	"strconv"
 	"strings"
 
 	"github.com/ma-vin/packages-action/config"
 	"github.com/ma-vin/packages-action/service/github_model"
+	"github.com/ma-vin/typewriter/logger"
 )
 
 const (
@@ -64,7 +64,7 @@ func DetermineCandidates(config *config.Config) (*[]Candidate, error) {
 		return nil, err
 	}
 	if !existence {
-		log.Printf("There does not exists a package with name %s of type %s at user %s: skip deletion", config.PackageName, config.PackageType, config.User)
+		logger.Warningf("There does not exists a package with name %s of type %s at user %s: skip deletion", config.PackageName, config.PackageType, config.User)
 		return &[]Candidate{}, nil
 	}
 

@@ -5,11 +5,14 @@ import (
 	"testing"
 
 	"github.com/ma-vin/packages-action/testutil"
+	loggerConfig "github.com/ma-vin/typewriter/config"
 )
 
 func unsetEnv() {
 	unsetEnvWithPrefix("")
 	unsetEnvWithPrefix(ENV_GITHUB_PREFIX)
+
+	os.Setenv(loggerConfig.DEFAULT_LOG_LEVEL_PROPERTY_NAME, "WARN")
 }
 
 func unsetEnvWithPrefix(prefix string) {

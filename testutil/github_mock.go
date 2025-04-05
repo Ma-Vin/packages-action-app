@@ -3,11 +3,11 @@ package testutil
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 	"net/http/httptest"
 
 	"github.com/ma-vin/packages-action/service/github_model"
+	"github.com/ma-vin/typewriter/logger"
 )
 
 const gitHubModelJsonType string = "application/vnd.github+json"
@@ -46,18 +46,18 @@ func CreateAndStartMock(userName string, packageType string, packageName string,
 	GetAllUserPackagesCounter = 0
 
 	server = httptest.NewServer(mux)
-	log.Println("Mock - server started")
+	logger.Information("Mock - server started")
 
 	return server.URL
 }
 
 func StopMock() {
 	server.Close()
-	log.Println("Mock - server stopped")
+	logger.Information("Mock - server stopped")
 }
 
 func getUserPackageVersionsHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Mock - getUserPackageVersionsHandler %s '%s'", r.Method, r.URL)
+	logger.Informationf("Mock - getUserPackageVersionsHandler %s '%s'", r.Method, r.URL)
 	if r.Method == http.MethodGet {
 		GetUserPackageVersionsCounter++
 		w.Header().Set("Content-Type", gitHubModelJsonType)
@@ -68,7 +68,7 @@ func getUserPackageVersionsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteUserPackageVersionHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Mock - deleteUserPackageVersionHandler %s '%s'", r.Method, r.URL)
+	logger.Informationf("Mock - deleteUserPackageVersionHandler %s '%s'", r.Method, r.URL)
 	if r.Method == http.MethodDelete {
 		DeleteUserPackageVersionCounter++
 		w.Header().Set("Content-Type", gitHubModelJsonType)
@@ -79,7 +79,7 @@ func deleteUserPackageVersionHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getOrDeleteUserPackageHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Mock - getOrDeleteUserPackageHandler %s '%s'", r.Method, r.URL)
+	logger.Informationf("Mock - getOrDeleteUserPackageHandler %s '%s'", r.Method, r.URL)
 	switch r.Method {
 	case http.MethodGet:
 		GetUserPackageCounter++
@@ -95,7 +95,7 @@ func getOrDeleteUserPackageHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func getAllUserPackagesHandler(w http.ResponseWriter, r *http.Request) {
-	log.Printf("Mock - getAllUserPackagesHandler %s '%s'", r.Method, r.URL)
+	logger.Informationf("Mock - getAllUserPackagesHandler %s '%s'", r.Method, r.URL)
 	if r.Method == http.MethodGet {
 		var data *[]github_model.UserPackage
 		if packageData != nil {

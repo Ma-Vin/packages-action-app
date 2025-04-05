@@ -1,10 +1,9 @@
 package main
 
 import (
-	"log"
-
 	"github.com/ma-vin/packages-action/config"
 	"github.com/ma-vin/packages-action/service"
+	"github.com/ma-vin/typewriter/logger"
 )
 
 var (
@@ -16,7 +15,7 @@ var (
 // Main funtion to execute the actions process
 func main() {
 	printVersion()
-	log.Println("Start packages action")
+	logger.Information("Start packages action")
 	initAll()
 
 	var loadedConfig, err = config.ReadConfiguration()
@@ -26,12 +25,12 @@ func main() {
 	err = service.DeleteVersions(loadedConfig)
 	checkError(err)
 
-	log.Println("Packages action done")
+	logger.Information("Packages action done")
 }
 
 func checkError(err error) {
 	if err != nil {
-		log.Fatalf("Packages action failed: %s", err)
+		logger.Fatalf("Packages action failed: %s", err)
 	}
 }
 
@@ -44,12 +43,12 @@ func initAll() {
 // prints the version, git hash and branch name if set by ldflags
 func printVersion() {
 	if version != "" {
-		log.Printf("Version: %s", version)
+		logger.Informationf("Version: %s", version)
 	}
 	if gitSha != "" {
-		log.Printf("GitSha:  %s", gitSha)
+		logger.Informationf("GitSha:  %s", gitSha)
 	}
 	if branchName != "" {
-		log.Printf("Branch:  %s", branchName)
+		logger.Informationf("Branch:  %s", branchName)
 	}
 }

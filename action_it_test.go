@@ -7,6 +7,7 @@ import (
 	"github.com/ma-vin/packages-action/config"
 	"github.com/ma-vin/packages-action/service/github_model"
 	"github.com/ma-vin/packages-action/testutil"
+	loggerConfig "github.com/ma-vin/typewriter/config"
 )
 
 func unsetEnv() {
@@ -22,6 +23,8 @@ func unsetEnv() {
 	os.Unsetenv(config.ENV_NAME_NUMBER_PATCH_TO_KEEP)
 	os.Unsetenv(config.ENV_NAME_GITHUB_TOKEN)
 	os.Unsetenv(config.ENV_NAME_DRY_RUN)
+
+	os.Setenv(loggerConfig.DEFAULT_LOG_LEVEL_PROPERTY_NAME, "INFO")
 }
 
 func createTestPackage() *github_model.UserPackage {

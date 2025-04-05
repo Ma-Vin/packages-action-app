@@ -3,10 +3,10 @@ package service
 import (
 	"errors"
 	"fmt"
-	"log"
 	"sync"
 
 	"github.com/ma-vin/packages-action/config"
+	"github.com/ma-vin/typewriter/logger"
 )
 
 type DetermineCandidatesExecutor func(config *config.Config) (*[]Candidate, error)
@@ -56,7 +56,7 @@ func DeleteVersions(config *config.Config) error {
 	}
 
 	if config.DryRun {
-		log.Println("Skip deletion because of dryRun")
+		logger.Information("Skip deletion because of dryRun")
 		return nil
 	}
 
@@ -75,7 +75,7 @@ func DeleteVersions(config *config.Config) error {
 	for err := range channel {
 		if err != nil {
 			withErrors = true
-			log.Println(err.Error())
+			logger.Error(err.Error())
 		}
 	}
 	if withErrors {
@@ -101,12 +101,12 @@ func deleteCandidate(candidate *Candidate, config *config.Config, channel chan e
 // logs the candidates which will be deleted
 func logCandidates(candidates *[]Candidate) {
 	if len(*candidates) == 0 {
-		log.Println("no candidates determined")
+		logger.Information("no candidates determined")
 		return
 	}
-	log.Println("the following elements will be deleted")
+	logger.Information("the following elements will be deleted")
 	for i, c := range *candidates {
-		log.Printf("  %d. type: %s name: '%s' id: %d created: %s updated: %s description: '%s'", i+1, getCandidateTypeText(&c.Type), c.Name, c.Id, c.CreatedAt, c.UpdatedAt, c.Description)
+		logger.Informationf("  %d. type: %s name: '%s' id: %d created: %s updated: %s description: '%s'", i+1, getCandidateTypeText(&c.Type), c.Name, c.Id, c.CreatedAt, c.UpdatedAt, c.Description)
 	}
 }
 

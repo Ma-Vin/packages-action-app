@@ -2,10 +2,11 @@ package config
 
 import (
 	"errors"
-	"log"
 	"os"
 	"strconv"
 	"strings"
+
+	"github.com/ma-vin/typewriter/logger"
 )
 
 const (
@@ -149,11 +150,11 @@ func getIntEnvDefault(envName string, defaultValue int) int {
 	if envValue != "" {
 		res, err := strconv.Atoi(os.Getenv(envName))
 		if err != nil {
-			log.Println(err)
+			logger.Error(err)
 			return defaultValue
 		}
 		if res <= 0 {
-			log.Println("Only positiv values are allowed but found ", res, " for environment variable ", envName)
+			logger.Error("Only positiv values are allowed but found ", res, " for environment variable ", envName)
 			return defaultValue
 		}
 		return res
@@ -174,24 +175,24 @@ func mapToPackageType(toMap string) string {
 // Checks whether a given configuration is valid or not
 func isValid(config *Config) bool {
 	if (config.Organization != "" && config.User != "") || (config.Organization == "" && config.User == "") {
-		log.Println("Fill exactly one: Either user or organization")
+		logger.Error("Fill exactly one: Either user or organization")
 		return false
 	}
 	if config.PackageType == UNKNOWN {
-		log.Println("The packagetype is unknown")
+		logger.Error("The packagetype is unknown")
 		return false
 	}
 	if config.PackageName == "" {
-		log.Println("Missing package name")
+		logger.Error("Missing package name")
 		return false
 	}
 	if config.GithubToken == "" {
-		log.Println("Missing GitHub token")
+		logger.Error("Missing GitHub token")
 		return false
 	}
 	if config.VersionNameToDelete == "" && !config.DeleteSnapshots &&
 		config.NumberOfMajorVersionsToKeep <= 0 && config.NumberOfMinorVersionsToKeep <= 0 && config.NumberOfPatchVersionsToKeep <= 0 {
-		log.Println("Nothing configured to delete: set a conrete version name, snapshot deletion or major, minor or patch to keep")
+		logger.Error("Nothing configured to delete: set a conrete version name, snapshot deletion or major, minor or patch to keep")
 		return false
 	}
 	return true
@@ -199,31 +200,31 @@ func isValid(config *Config) bool {
 
 // prints a given configuration to the standard output
 func printConfig(config *Config) {
-	log.Println("Read configuration", config.Organization)
-	log.Println("  GitHubRestUrl:       ", config.GitHubRestUrl)
-	log.Println("  Organization:        ", config.Organization)
-	log.Println("  User:                ", config.User)
-	log.Println("  PackageType:         ", config.PackageType)
-	log.Println("  PackageName:         ", config.PackageName)
-	log.Println("  VersionNameToDelete: ", config.VersionNameToDelete)
-	log.Println("  DeleteSnapshots:     ", config.DeleteSnapshots)
+	logger.Information("Read configuration", config.Organization)
+	logger.Information("  GitHubRestUrl:       ", config.GitHubRestUrl)
+	logger.Information("  Organization:        ", config.Organization)
+	logger.Information("  User:                ", config.User)
+	logger.Information("  PackageType:         ", config.PackageType)
+	logger.Information("  PackageName:         ", config.PackageName)
+	logger.Information("  VersionNameToDelete: ", config.VersionNameToDelete)
+	logger.Information("  DeleteSnapshots:     ", config.DeleteSnapshots)
 	printPositiv("  MajorVersionsToKeep: ", config.NumberOfMajorVersionsToKeep)
 	printPositiv("  MinorVersionsToKeep: ", config.NumberOfMinorVersionsToKeep)
 	printPositiv("  PatchVersionsToKeep: ", config.NumberOfPatchVersionsToKeep)
 	if config.GithubToken != "" {
-		log.Println("  GithubToken:          ***")
+		logger.Information("  GithubToken:          ***")
 	} else {
-		log.Println("  GithubToken:")
+		logger.Information("  GithubToken:")
 	}
-	log.Println("  DryRun:              ", config.DryRun)
-	log.Println("  DebugLog:            ", config.Debug)
-	log.Println("  RestTimeout:         ", config.Timeout)
+	logger.Information("  DryRun:              ", config.DryRun)
+	logger.Information("  DebugLog:            ", config.Debug)
+	logger.Information("  RestTimeout:         ", config.Timeout)
 }
 
 func printPositiv(text string, value int) {
 	if 0 < value {
-		log.Println(text, value)
+		logger.Information(text, value)
 		return
 	}
-	log.Println(text)
+	logger.Information(text)
 }
