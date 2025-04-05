@@ -17,7 +17,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v5
       with:
-        go-version: '1.22'
+        go-version: '~1.24.1'
     - name: Build
       run: go build -v ./...
     - name: Test
@@ -68,7 +68,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: '1.22'
+          go-version: '~1.24.1'
       - name: Build ${{ matrix.goOs }}-${{ matrix.goArch }}
         run: |
           VERSION_NAME=$(echo "${GITHUB_REF_NAME}" | grep -oP '(?<=release/).*')
