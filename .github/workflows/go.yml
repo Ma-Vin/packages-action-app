@@ -20,7 +20,7 @@ jobs:
         - name: Build
           run: go build -v ./...
         - name: Test
-          run: go test -v -coverprofile='coverage.out' -json ./... > report.json
+          run: go test -v -coverprofile='coverage.out' -coverpkg=./... -json ./... > report.json
         - name: SonarQube Scan
           uses: sonarsource/sonarqube-scan-action@v2
           env:
