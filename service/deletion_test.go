@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/ma-vin/packages-action/config"
-	"github.com/ma-vin/packages-action/testutil"
+	"github.com/ma-vin/testutil-go"
 )
 
 var deletionConf config.Config

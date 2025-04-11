@@ -6,7 +6,7 @@ import (
 
 	"github.com/ma-vin/packages-action/config"
 	"github.com/ma-vin/packages-action/service/github_model"
-	"github.com/ma-vin/packages-action/testutil"
+	"github.com/ma-vin/testutil-go"
 )
 
 var candidatesConf config.Config

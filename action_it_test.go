@@ -7,6 +7,7 @@ import (
 	"github.com/ma-vin/packages-action/config"
 	"github.com/ma-vin/packages-action/service/github_model"
 	"github.com/ma-vin/packages-action/testutil"
+	testutilAssert "github.com/ma-vin/testutil-go"
 	loggerConfig "github.com/ma-vin/typewriter/config"
 )
 
@@ -63,11 +64,11 @@ func TestMainDeleteVersionsDryRun(t *testing.T) {
 
 	main()
 
-	testutil.AssertEquals(1, testutil.GetAllUserPackagesCounter, t, "Count of GetAllUserPackages")
-	testutil.AssertEquals(1, testutil.GetUserPackageVersionsCounter, t, "Count of GetUserPackageVersions")
-	testutil.AssertEquals(0, testutil.DeleteUserPackageVersionCounter, t, "Count of DeleteUserPackageVersion")
-	testutil.AssertEquals(0, testutil.GetUserPackageCounter, t, "Count of GetUserPackage")
-	testutil.AssertEquals(0, testutil.DeleteUserPackageCounter, t, "Count of DeleteUserPackage")
+	testutilAssert.AssertEquals(1, testutil.GetAllUserPackagesCounter, t, "Count of GetAllUserPackages")
+	testutilAssert.AssertEquals(1, testutil.GetUserPackageVersionsCounter, t, "Count of GetUserPackageVersions")
+	testutilAssert.AssertEquals(0, testutil.DeleteUserPackageVersionCounter, t, "Count of DeleteUserPackageVersion")
+	testutilAssert.AssertEquals(0, testutil.GetUserPackageCounter, t, "Count of GetUserPackage")
+	testutilAssert.AssertEquals(0, testutil.DeleteUserPackageCounter, t, "Count of DeleteUserPackage")
 }
 
 func TestMainDeleteVersionsRealRun(t *testing.T) {
@@ -86,11 +87,11 @@ func TestMainDeleteVersionsRealRun(t *testing.T) {
 
 	main()
 
-	testutil.AssertEquals(1, testutil.GetAllUserPackagesCounter, t, "Count of GetAllUserPackages")
-	testutil.AssertEquals(1, testutil.GetUserPackageVersionsCounter, t, "Count of GetUserPackageVersions")
-	testutil.AssertEquals(2, testutil.DeleteUserPackageVersionCounter, t, "Count of DeleteUserPackageVersion")
-	testutil.AssertEquals(0, testutil.GetUserPackageCounter, t, "Count of GetUserPackage")
-	testutil.AssertEquals(0, testutil.DeleteUserPackageCounter, t, "Count of DeleteUserPackage")
+	testutilAssert.AssertEquals(1, testutil.GetAllUserPackagesCounter, t, "Count of GetAllUserPackages")
+	testutilAssert.AssertEquals(1, testutil.GetUserPackageVersionsCounter, t, "Count of GetUserPackageVersions")
+	testutilAssert.AssertEquals(2, testutil.DeleteUserPackageVersionCounter, t, "Count of DeleteUserPackageVersion")
+	testutilAssert.AssertEquals(0, testutil.GetUserPackageCounter, t, "Count of GetUserPackage")
+	testutilAssert.AssertEquals(0, testutil.DeleteUserPackageCounter, t, "Count of DeleteUserPackage")
 }
 
 func TestMainDeleteAllVersionsDryRun(t *testing.T) {
@@ -108,11 +109,11 @@ func TestMainDeleteAllVersionsDryRun(t *testing.T) {
 
 	main()
 
-	testutil.AssertEquals(1, testutil.GetAllUserPackagesCounter, t, "Count of GetAllUserPackages")
-	testutil.AssertEquals(1, testutil.GetUserPackageVersionsCounter, t, "Count of GetUserPackageVersions")
-	testutil.AssertEquals(0, testutil.DeleteUserPackageVersionCounter, t, "Count of DeleteUserPackageVersion")
-	testutil.AssertEquals(1, testutil.GetUserPackageCounter, t, "Count of GetUserPackage")
-	testutil.AssertEquals(0, testutil.DeleteUserPackageCounter, t, "Count of DeleteUserPackage")
+	testutilAssert.AssertEquals(1, testutil.GetAllUserPackagesCounter, t, "Count of GetAllUserPackages")
+	testutilAssert.AssertEquals(1, testutil.GetUserPackageVersionsCounter, t, "Count of GetUserPackageVersions")
+	testutilAssert.AssertEquals(0, testutil.DeleteUserPackageVersionCounter, t, "Count of DeleteUserPackageVersion")
+	testutilAssert.AssertEquals(1, testutil.GetUserPackageCounter, t, "Count of GetUserPackage")
+	testutilAssert.AssertEquals(0, testutil.DeleteUserPackageCounter, t, "Count of DeleteUserPackage")
 }
 
 func TestMainDeleteAllVersionsRealRun(t *testing.T) {
@@ -131,11 +132,11 @@ func TestMainDeleteAllVersionsRealRun(t *testing.T) {
 
 	main()
 
-	testutil.AssertEquals(1, testutil.GetAllUserPackagesCounter, t, "Count of GetAllUserPackages")
-	testutil.AssertEquals(1, testutil.GetUserPackageVersionsCounter, t, "Count of GetUserPackageVersions")
-	testutil.AssertEquals(0, testutil.DeleteUserPackageVersionCounter, t, "Count of DeleteUserPackageVersion")
-	testutil.AssertEquals(1, testutil.GetUserPackageCounter, t, "Count of GetUserPackage")
-	testutil.AssertEquals(1, testutil.DeleteUserPackageCounter, t, "Count of DeleteUserPackage")
+	testutilAssert.AssertEquals(1, testutil.GetAllUserPackagesCounter, t, "Count of GetAllUserPackages")
+	testutilAssert.AssertEquals(1, testutil.GetUserPackageVersionsCounter, t, "Count of GetUserPackageVersions")
+	testutilAssert.AssertEquals(0, testutil.DeleteUserPackageVersionCounter, t, "Count of DeleteUserPackageVersion")
+	testutilAssert.AssertEquals(1, testutil.GetUserPackageCounter, t, "Count of GetUserPackage")
+	testutilAssert.AssertEquals(1, testutil.DeleteUserPackageCounter, t, "Count of DeleteUserPackage")
 }
 
 func TestMainNoPackageDryRun(t *testing.T) {
@@ -153,9 +154,9 @@ func TestMainNoPackageDryRun(t *testing.T) {
 
 	main()
 
-	testutil.AssertEquals(1, testutil.GetAllUserPackagesCounter, t, "Count of GetAllUserPackages")
-	testutil.AssertEquals(0, testutil.GetUserPackageVersionsCounter, t, "Count of GetUserPackageVersions")
-	testutil.AssertEquals(0, testutil.DeleteUserPackageVersionCounter, t, "Count of DeleteUserPackageVersion")
-	testutil.AssertEquals(0, testutil.GetUserPackageCounter, t, "Count of GetUserPackage")
-	testutil.AssertEquals(0, testutil.DeleteUserPackageCounter, t, "Count of DeleteUserPackage")
+	testutilAssert.AssertEquals(1, testutil.GetAllUserPackagesCounter, t, "Count of GetAllUserPackages")
+	testutilAssert.AssertEquals(0, testutil.GetUserPackageVersionsCounter, t, "Count of GetUserPackageVersions")
+	testutilAssert.AssertEquals(0, testutil.DeleteUserPackageVersionCounter, t, "Count of DeleteUserPackageVersion")
+	testutilAssert.AssertEquals(0, testutil.GetUserPackageCounter, t, "Count of GetUserPackage")
+	testutilAssert.AssertEquals(0, testutil.DeleteUserPackageCounter, t, "Count of DeleteUserPackage")
 }

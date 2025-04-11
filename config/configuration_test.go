@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/ma-vin/packages-action/testutil"
+	"github.com/ma-vin/testutil-go"
 	loggerConfig "github.com/ma-vin/typewriter/config"
 )
 

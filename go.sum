@@ -1,2 +1,4 @@
+github.com/ma-vin/testutil-go v1.0.0 h1:z7N9VjoyQWyK5Q4AfCzaRxZ/xLHSsVTj73vSNsSEw80=
+github.com/ma-vin/testutil-go v1.0.0/go.mod h1:XAlOgbmqEx+qq5r6Za0H0gjZwbq7Tkbu7tpibE0P7DQ=
 github.com/ma-vin/typewriter v1.0.0 h1:4Nk62zPya0RxLzRAOke5IbJBrOUMXpT61fc9ZSaylPA=
 github.com/ma-vin/typewriter v1.0.0/go.mod h1:IFwMHCcshhaUGuIUqDPHFNUNX6ju9Kc8JCofuokB52I=
