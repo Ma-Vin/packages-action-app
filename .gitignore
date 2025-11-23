@@ -1,3 +1,4 @@
 *.exe
+.scannerwork
 coverage.out
 report.json
